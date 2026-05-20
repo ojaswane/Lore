@@ -2,7 +2,7 @@
 
 <!-- logo goes here -->
 
-<img src="./assets/lore-owl.png" width="120" alt="Lore — owl with a big brain" />
+<img src="./assets/lore-owl.png" width="200" alt="Lore — owl with a big brain" />
 
 # Lore
 
