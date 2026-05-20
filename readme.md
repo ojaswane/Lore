@@ -20,11 +20,11 @@
 
 ## What is Lore?
 
-Every project has a story — the commands you ran, the errors you hit, the fixes that worked, the decisions you made at 2am. Most terminals let all of that disappear the moment you close the window.
+Every project has a story the commands you ran, the errors you hit, the fixes that worked, the decisions you made at 2am. Most terminals let all of that disappear the moment you close the window.
 
 Lore doesn't.
 
-Lore is a terminal emulator that stores the **lore of your work** — session by session, project by project. It looks and feels like a regular terminal. But underneath, it's building a searchable, compressed, local database of everything you've ever done.
+Lore is a terminal emulator that stores the **lore of your work** session by session, project by project. It looks and feels like a regular terminal. But underneath, it's building a searchable, compressed, local database of everything you've ever done.
 
 No cloud. No account. No creepiness. Just your lore, on your machine.
 
