@@ -98,12 +98,12 @@ lore/
 
 ## Tech stack
 
-- **Python 3.11+** — core language
-- **ptyprocess** — PTY shell spawning (cross-platform)
-- **Textual** — terminal UI framework
-- **SQLite3** — local session storage (built into Python, zero setup)
-- **zlib** — compression (built into Python)
-- **Ollama** (coming soon) — local AI integration
+- **Rust** — core language
+- **portable-pty** — PTY shell spawning
+- **ratatui** — terminal UI framework
+- **rusqlite** — local session storage (built into Python, zero setup)
+- **flate2** — compression
+- **reqwest (HTTP calls to Ollama API)** (coming soon) — local AI integration
 
 ---
 
