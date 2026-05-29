@@ -76,22 +76,22 @@ You type a command
 
 ```
 lore/
-├── main.py                  # entry point
+├── main.rs                  # entry point
 ├── config.toml              # user settings (theme, storage limit)
 ├── requirements.txt
 │
 ├── core/
-│   ├── shell.py             # pty shell spawning, stdin/stdout piping
-│   ├── interceptor.py       # captures command + output before display
-│   └── compressor.py        # zlib compression, smart truncation, tiered by age
+│   ├── shell.rs             # pty shell spawning, stdin/stdout piping
+│   ├── interceptor.rs       # captures command + output before display
+│   └── compressor.rs       # compression, smart truncation, tiered by age
 │
 ├── db/
-│   ├── storage.py           # sqlite3 — sessions, commands, output, exit codes
-│   └── search.py            # query by keyword, date, project, exit code
+│   ├── storage.rs           # rusqlite — sessions, commands, output, exit codes
+│   └── search.rs           # query by keyword, date, project, exit code
 │
 └── ui/
-    ├── terminal.py          # textual app, input handling, output display
-    └── history.py           # lore search panel, session viewer
+    ├── terminal.rs          # textual app, input handling, output display
+    └── history.rs          # lore search panel, session viewer
 ```
 
 ---
@@ -113,14 +113,14 @@ lore/
 
 ```bash
 # clone the repo
-git clone https://github.com/yourusername/lore.git
+git clone https://github.com/ojaswane/lore.git
 cd lore
 
-# install dependencies
-pip install -r requirements.txt
+# # install dependencies
+# pip install -r requirements.txt
 
 # run lore
-python main.py
+cargo run main.rs
 ```
 
 ---
@@ -128,9 +128,9 @@ python main.py
 ## Roadmap
 
 ```
-v0.1  ✦  working terminal (pty shell + textual UI)
-v0.2  ✦  session storage (sqlite, commands + output)
-v0.3  ✦  smart compression (zlib, tiered by age)
+v0.1  ✦  working terminal (portable-pty shell + ratatui UI)
+v0.2  ✦  session storage (rusqlite, commands + output)
+v0.3  ✦  smart compression (flate2, tiered by age)
 v0.4  ✦  lore search (search past sessions)
 v0.5  ✦  local AI via ollama (error explanation, suggestions)
 v0.6  ✦  automation layer (scheduling, notifications)
