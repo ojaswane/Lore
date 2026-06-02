@@ -1,11 +1,17 @@
 // Lets start our contribution by creating first a terminal emulator using ratatui
 use ratatui::{DefaultTerminal, Terminal};
-use color-eyre::eyre::Result; // this is the error handling library we will be using
+use color_eyre::eyre::Result; // this is the error handling library we will be using
+mod ui;
 
 fn main() -> Result<()> {
-    color-eyre::install()?;
+    color_eyre::install()?;
 
-    // Application code goes here 
-    
-    OK(());
+    // Application code goes here ˝
+    // ratatui::run(app);
+    app();
+    Ok(())
+}
+
+fn app() {
+    ui::terminal::ui(); // this should print hello lore to terminal 
 }
