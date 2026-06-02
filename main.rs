@@ -8,9 +8,10 @@ fn main() -> Result<()> {
 
     // Application code goes here ˝
     // ratatui::run(app);
-    
+
     app();
     Ok(())
+    
 }
 
 fn app() {
