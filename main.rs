@@ -5,15 +5,20 @@ mod ui;
 
 fn main() -> Result<()> {
     color_eyre::install()?;
-
-    // Application code goes here ˝
-    // ratatui::run(app);
-
-    app();
-    Ok(())
     
+    //initialising the terminal 
+    let mut terminal = ratatui::init();
+
+    // calling the app function to run the GUI 
+    app(terminal);
+    Ok(())
+
 }
 
-fn app() {
-    ui::terminal::ui(); // this should print hello lore to terminal 
-}
+fn app(mut terminal: DefaultTerminal) -> Result<()> {
+    terminal.draw(|frame| {
+        ui::terminal::ui(frame);
+    })
+
+    Ok(())
+}   
