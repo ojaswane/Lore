@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 ratatui = { version = "0.30.0", default-features = false, features = ["termion"] }
+color-eyre = "0.6"
 
 [[bin]]
 name = "Lore"
