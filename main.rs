@@ -7,7 +7,7 @@ fn main() -> Result<()> {
     color_eyre::install()?;
     
     //initialising the terminal 
-    let mut terminal = ratatui::init();
+    let mut terminal = ratatui::run();
 
     // calling the app function to run the GUI 
     app(terminal);
@@ -16,10 +16,10 @@ fn main() -> Result<()> {
 }
 
 fn app(mut terminal: DefaultTerminal) -> Result<()> {
-    
+
     terminal.draw(|frame| {
         ui::terminal::ui(frame);
-    })
+    });
 
     Ok(())
 }   
