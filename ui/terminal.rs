@@ -1,7 +1,11 @@
-// this is the file which will be used to create the terminal ui for lore
-// use ratatui::{DefaultTerminal, Terminal};
-// use color_eyre::eyre::Result; // this is the error handling library we will
+// This will generate the GUI for the terminal.
+use ratatui::{
+    Widget:Paragraph,
+    frame::Frame,
+}
 
-pub fn ui(){
-    println!("Hello lore");
+pub fn ui(frame: &mut Frame){
+    let Paragraph = Paragraph::new("Hello Loree ");
+
+    
 }

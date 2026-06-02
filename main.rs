@@ -16,6 +16,7 @@ fn main() -> Result<()> {
 }
 
 fn app(mut terminal: DefaultTerminal) -> Result<()> {
+    
     terminal.draw(|frame| {
         ui::terminal::ui(frame);
     })
