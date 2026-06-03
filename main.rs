@@ -1,6 +1,7 @@
 // Lets start our contribution by creating first a terminal emulator using ratatui
 use ratatui::DefaultTerminal;
 use color_eyre::eyre::Result; // this is the error handling library we will be using
+use crossterm::event::{self , Event , KeyCode}; // this is the library we will be using to handle the events of the terminal
 mod ui;
 
 fn main() -> Result<()> {
@@ -17,10 +18,39 @@ fn main() -> Result<()> {
 
 fn app(mut terminal: DefaultTerminal) -> Result<()> {
 
-    // This will draw the Ui to show onto the terminal and show the output as we want
-    terminal.draw(|frame| {
-        ui::terminal::ui(frame);
-    })?;
+    let mut text = String::new();
+
+    loop{
+        // This will draw the Ui to show onto the terminal and show the output as we want
+        terminal.draw(|frame| {
+            ui::terminal::ui(frame);
+        })?;
+
+        // to match the events
+        if Event::Key(key) == event::read()? {
+            match key.code{
+                //add the charecter to the text
+                KeyCode::Char('c') => {
+                    text.push('c');
+                }
+
+                //remove the charecter 
+                KeyCode::Backspace => {
+                    text.pop();
+                }
+
+                //exit app
+                KeyCode::Esc => {
+                    break;
+                }
+
+                //rest , remain same 
+                _ => {}
+            }
+        }
+
+    }
+
 
     Ok(())
 }   
