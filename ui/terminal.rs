@@ -4,6 +4,7 @@ use ratatui::{
     widgets::Paragraph,
 };
 
+//this will just print an paragraph with "Hello Loree"
 pub fn ui(frame: &mut Frame<'_>) { // we use the frame and update it for some time and it will render the TUI 
     let text = Paragraph::new("Hello Loree ");
 

@@ -17,6 +17,7 @@ fn main() -> Result<()> {
 
 fn app(mut terminal: DefaultTerminal) -> Result<()> {
 
+    // This will draw the Ui to show onto the terminal and show the output as we want
     terminal.draw(|frame| {
         ui::terminal::ui(frame);
     })?;
