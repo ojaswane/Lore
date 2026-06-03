@@ -3,6 +3,7 @@ use ratatui::DefaultTerminal;
 use color_eyre::eyre::Result; // this is the error handling library we will be using
 use crossterm::event::{self , Event , KeyCode}; // this is the library we will be using to handle the events of the terminal
 mod ui;
+mod core;
 
 fn main() -> Result<()> {
     color_eyre::install()?;
