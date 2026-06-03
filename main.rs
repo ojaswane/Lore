@@ -23,7 +23,7 @@ fn app(mut terminal: DefaultTerminal) -> Result<()> {
     loop{
         // This will draw the Ui to show onto the terminal and show the output as we want
         terminal.draw(|frame| {
-            ui::terminal::ui(frame);
+            ui::terminal::ui(frame , &mut text);
         })?;
 
         // to match the events (To match the keys to be pressed)
