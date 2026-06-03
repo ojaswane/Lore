@@ -15,7 +15,6 @@
 [![Contributors Welcome](https://img.shields.io/badge/Contributors-Welcome-4ade80.svg)](CONTRIBUTING.md) -->
 
 </div>
-
 ---
 
 ## What is Lore?
@@ -69,6 +68,21 @@ You type a command
       \ /
    Renderer          ←  Textual UI (looks like a normal terminal)
 ```
+
+---
+
+## The system design
+
+Lore is built as a local terminal emulator with a memory layer that lives alongside the shell. The system design focuses on capturing commands and output in real time, storing them in a compressed SQLite database, and rendering the terminal UI so it feels like a normal shell.
+
+- `PTY layer` spawns the real shell and proxies stdin/stdout.
+- `Interceptor` captures commands, outputs, metadata, and sends them to storage.
+- `Lore DB` stores sessions, commands, outputs, and exit codes in a local SQLite file.
+- `Renderer` displays terminal output with no additional UI chrome.
+
+View the full design diagram here:
+
+https://excalidraw.com/#json=F041fX85vcvojEIwq7Yqc,3KJ5kW-5muuxaq9lSvPfDQ
 
 ---
 
