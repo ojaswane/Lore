@@ -27,9 +27,9 @@ fn app(mut terminal: DefaultTerminal) -> Result<()> {
         })?;
 
         // to match the events (To match the keys to be pressed)
-        if Event::Key(key) == event::read()? {
-            match key.code{
-                //add the charecter to the text
+        if let Event::Key(key) = event::read()? {
+            match key.code {
+                // add the character to the text
                 KeyCode::Char('c') => {
                     text.push('c');
                 }
