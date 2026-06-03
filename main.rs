@@ -7,7 +7,7 @@ fn main() -> Result<()> {
     color_eyre::install()?;
     
     //initialising the terminal 
-    let terminal = ratatui::init();
+    let terminal = ratatui::init(); // crossterm is a backed for ratatui which can support windows
 
     // calling the app function to run the GUI 
     app(terminal)?;
