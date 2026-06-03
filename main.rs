@@ -26,7 +26,7 @@ fn app(mut terminal: DefaultTerminal) -> Result<()> {
             ui::terminal::ui(frame);
         })?;
 
-        // to match the events
+        // to match the events (To match the keys to be pressed)
         if Event::Key(key) == event::read()? {
             match key.code{
                 //add the charecter to the text
@@ -44,7 +44,7 @@ fn app(mut terminal: DefaultTerminal) -> Result<()> {
                     break;
                 }
 
-                //rest , remain same 
+                //rest , remain same
                 _ => {}
             }
         }
