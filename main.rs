@@ -1,8 +1,5 @@
 // Lets start our contribution by creating first a terminal emulator using ratatui
-use ratatui::{
-    backend::DefaultTerminal,
-    Terminal,
-};
+use ratatui::DefaultTerminal;
 use color_eyre::eyre::Result; // this is the error handling library we will be using
 mod ui;
 
@@ -10,10 +7,10 @@ fn main() -> Result<()> {
     color_eyre::install()?;
     
     //initialising the terminal 
-    let mut terminal = ratatui::init();
+    let terminal = ratatui::init();
 
     // calling the app function to run the GUI 
-    app(terminal);
+    app(terminal)?;
     Ok(())
 
 }
