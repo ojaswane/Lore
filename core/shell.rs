@@ -17,10 +17,11 @@ pub fn shell() -> Result<(Box<dyn MasterPty>, Box<dyn Child>)> { // Box means it
     })?;
 
     // spawning the shell
-    // this is the slave and the ratatui is the master
+    // this is the slave , it is basically the endpoint to the kernal 
     let cmd = pty.slave.spawn_command(CommandBuilder::new("zsh"))?;  
     // "Box" is basically to allocate the data into heap rather than stack
     
+    // master , which is the endpoint to the user and it will be used to read and write data to the shell
     let _reader = pty.master.try_clone_reader()?;
     let _writer = pty.master.take_writer()?;
     
