@@ -5,6 +5,7 @@ use crossterm::event::{self , Event , KeyCode}; // this is the library we will b
 mod ui;
 mod core;
 
+
 fn main() -> Result<()> {
     color_eyre::install()?;
     
@@ -19,6 +20,7 @@ fn main() -> Result<()> {
 
 fn app(mut terminal: DefaultTerminal) -> Result<()> {
 
+    let(master , _child) = core::shell::shell()?; // this will create a new shell and return the master and child process of the shell
     let mut text = String::new();
 
     loop{
