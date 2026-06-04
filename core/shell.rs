@@ -1,5 +1,5 @@
 // we will be using a library called portable-pty for the pseudo terminal
-use portable_pty::{CommandBuilder, NativePtySystem, PtySize, Child, MasterPty};
+use portable_pty::{CommandBuilder, NativePtySystem, PtySize, Child, MasterPty , PtySystem };
 use color_eyre::eyre::Result; // this is the error handling library we will be using
 
 
@@ -16,7 +16,7 @@ pub fn shell() -> Result<(Box<dyn portable_pty::MasterPty>, Child)> {
     })?;
 
     // spawning the shell
-    let cmd = pty.spawn_command(CommandBuilder::new("zsh"))?;
+    let cmd = pty.slave.spawn_command(CommandBuilder::new("zsh"))?;
     
     let _reader = pty.try_clone_reader()?;
     let _writer = pty.try_clone_writer()?;
