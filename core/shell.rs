@@ -1,6 +1,6 @@
 // we will be using a library called portable-pty for the pseudo terminal
 use portable_pty::{CommandBuilder, NativePtySystem, PtySize, Child, MasterPty , PtySystem };
-use color_eyre::eyre::Result; // this is the error handling library we will be using
+use anyhow::Result;
 
 
 // the dyn keyword is used to indicate that the type of the master pty is not known at compile time and it will be determined at runtime
@@ -25,5 +25,4 @@ pub fn shell() -> Result<(Box<dyn MasterPty>, Box<dyn Child>)> { // Box means it
     let _writer = pty.master.take_writer()?;
     
     Ok((pty.master, cmd))
-
 }
