@@ -1,13 +1,12 @@
 // Lets start our contribution by creating first a terminal emulator using ratatui
 use ratatui::DefaultTerminal;
-use color_eyre::eyre::Result; // this is the error handling library we will be using
 use crossterm::event::{self , Event , KeyCode}; // this is the library we will be using to handle the events of the terminal
+use anyhow::Result; // this is the error handling library we will be using
 mod ui;
 mod core;
 
 
 fn main() -> Result<()> {
-    color_eyre::install()?;
     
     //initialising the terminal 
     let terminal = ratatui::init(); // crossterm is a backed for ratatui which can support windows
@@ -21,6 +20,7 @@ fn main() -> Result<()> {
 fn app(mut terminal: DefaultTerminal) -> Result<()> {
 
     let(master , _child) = core::shell::shell()?; // this will create a new shell and return the master and child process of the shell
+    
     let mut text = String::new();
 
     loop{
@@ -53,7 +53,6 @@ fn app(mut terminal: DefaultTerminal) -> Result<()> {
         }
 
     }
-
 
     Ok(())
 }   
