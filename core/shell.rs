@@ -4,7 +4,7 @@ use color_eyre::eyre::Result; // this is the error handling library we will be u
 
 
 // the dyn keyword is used to indicate that the type of the master pty is not known at compile time and it will be determined at runtime
-pub fn shell() -> Result<(Box<dyn portable_pty::MasterPty>, Child)> { 
+pub fn shell() -> Result<(Box<dyn MasterPty>, Box<dyn Child>)> { // Box means it will be using heap and dyn for runtime compiler
     // Use the native pty implementation for the system
     let pty_system = NativePtySystem::default();
 
@@ -18,10 +18,11 @@ pub fn shell() -> Result<(Box<dyn portable_pty::MasterPty>, Child)> {
 
     // spawning the shell
     // this is the slave and the ratatui is the master
-    let cmd = pty.slave.spawn_command(CommandBuilder::new("zsh"))?; 
+    let cmd = pty.slave.spawn_command(CommandBuilder::new("zsh"))?;  
+    // "Box" is basically to allocate the data into heap rather than stack
     
-    let _reader = pty.try_clone_reader()?;
-    let _writer = pty.try_clone_writer()?;
+    let _reader = pty.master.try_clone_reader()?;
+    let _writer = pty.master.try_clone_writer()?;
 
     Ok((pty.master, cmd))
 }
