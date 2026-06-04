@@ -22,7 +22,8 @@ pub fn shell() -> Result<(Box<dyn MasterPty>, Box<dyn Child>)> { // Box means it
     // "Box" is basically to allocate the data into heap rather than stack
     
     let _reader = pty.master.try_clone_reader()?;
-    let _writer = pty.master.try_clone_writer()?;
-
+    let _writer = pty.master.take_writer()?;
+    
     Ok((pty.master, cmd))
+
 }
