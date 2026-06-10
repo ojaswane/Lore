@@ -30,16 +30,3 @@ pub fn shell() -> Result<(Box<dyn MasterPty>, Box<dyn Child>)> { // Box means it
     
     Ok((pty.master, cmd))
 }
-
-
-// this will be used to read the output from the shell and split it into the threads and print them to the terminal
-pub fn output_shell() {
-
-    let output = Arc::new(Mutex::new(String::new())); // this will be used to store the output from the shell and it will be shared between the threads
-    let output_clone = output.clone(); // this will be used to clone the output for the thread
-    
-    thread::spawn(move || {
-        
-    });
-
-}

@@ -1,6 +1,13 @@
-// This file will read the output from the shell 
-// read the file from slave side
+// read and then write to the shell
+use portable_pty::MasterPty;
+use anyhow::Result;
 
-use std::io::Read;
-use std::io::Write;
+pub fn read_and_write(
+    master: &dyn MasterPty,
+) -> Result<()> {
 
+    let reader = master.try_clone_reader()?;
+    let writer = master.take_writer()?;
+
+    Ok(())
+}
