@@ -1,6 +1,7 @@
 // This file will print the output from shell to the ratatui 
 use std::thread;
 use std::sync::{Arc , Mutex};
+use anyhow::Result;
 
 fn output_shell(
     mut reader: Box<dyn Read + Send>, // the dyn keyword is to tell that it will be complied at realtime 
@@ -19,7 +20,11 @@ fn output_shell(
 
                     let mut output = output.lock().unwrap(); // locks the variable for one process at a time 
                     output.push_str(&text);
-                    
+
+                }
+
+                _ => {
+                    break;
                 }
             }
         }
