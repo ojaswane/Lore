@@ -13,6 +13,15 @@ fn output_shell(
         let mut buffer = [0; 1024]; //buffer to store the output from the shell
 
         loop {
+            match reader.read(&mut buffer) { // read the output from the shell and store it in the buffer
+                Ok(n) if n > 0 => {
+                    let text = String::from_utf8_lossy(&buffer[..n]).to_string(); // convert the buffer to string and store it in the text variable
+
+                    let mut output = output.lock().unwrap(); // locks the variable for one process at a time 
+                    output.push_str(&text);
+                    
+                }
+            }
         }
 
     })
