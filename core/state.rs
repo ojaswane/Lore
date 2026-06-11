@@ -1,12 +1,13 @@
 // This file will print the output from shell to the ratatui 
+use std::io::Read;
 use std::thread;
 use std::sync::{Arc , Mutex};
-use anyhow::Result;
 
+#[allow(dead_code)]
 pub fn output_shell(
     mut reader: Box<dyn Read + Send>, // the dyn keyword is to tell that it will be complied at realtime 
     output: Arc<Mutex<String>>,
-) {
+) -> thread::JoinHandle<()>{
 
     // Spawing a new thread for each output .
     //  we need to spawn a thread because we need to read the output from the shell and print it to the terminal and we don't want to block the main thread while reading the output from the shell

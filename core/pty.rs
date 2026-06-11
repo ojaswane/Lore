@@ -1,10 +1,6 @@
 // we will be using a library called portable-pty for the pseudo terminal
-use portable_pty::{CommandBuilder, NativePtySystem, PtySize, Child, MasterPty , PtySystem };
+use portable_pty::{CommandBuilder, NativePtySystem, PtySize, Child, MasterPty, PtySystem};
 use anyhow::Result;
-use std::io::{Read, Write};
-use std::thread;
-use std::sync::{Arc, Mutex};
-
 
 // the dyn keyword is used to indicate that the type of the master pty is not known at compile time and it will be determined at runtime
 pub fn shell() -> Result<(Box<dyn MasterPty>, Box<dyn Child>)> { // Box means it will be using heap and dyn for runtime compiler

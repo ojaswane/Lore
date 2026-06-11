@@ -2,6 +2,8 @@
 use ratatui::DefaultTerminal;
 use crossterm::event::{self , Event , KeyCode}; // this is the library we will be using to handle the events of the terminal
 use anyhow::Result; // this is the error handling library we will be using
+use crate::core::{io::system_io, pty::shell};
+
 mod ui;
 mod core;
 
@@ -19,8 +21,9 @@ fn main() -> Result<()> {
 
 fn app(mut terminal: DefaultTerminal) -> Result<()> {
 
-    let(master , _child) = core::shell::shell()?; // this will create a new shell and return the master and child process of the shell
-    
+    let (master, _child) = shell()?;
+    let (_reader, _writer) = system_io(master.as_ref())?;
+
     let mut text = String::new();
 
     loop{
