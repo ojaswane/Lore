@@ -95,9 +95,9 @@ lore/
 ├── requirements.txt
 │
 ├── core/
-│   ├── shell.rs             # pty shell spawning, stdin/stdout piping
-│   ├── interceptor.rs       # captures command + output before display
-│   └── compressor.rs       # compression, smart truncation, tiered by age
+│   ├── state.rs             # Prints the result
+│   ├── pty.rs               # spawns a pty 
+│   └── io.rs                # read the output from shell
 │
 ├── db/
 │   ├── storage.rs           # rusqlite — sessions, commands, output, exit codes
