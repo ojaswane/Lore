@@ -4,6 +4,7 @@ use crossterm::event::{self , Event , KeyCode}; // this is the library we will b
 use anyhow::Result; // this is the error handling library we will be using
 use crate::core::{io::system_io, pty::shell, state::output_shell};
 use std::sync::{Arc, Mutex};
+use std::io::Write;
 
 mod ui;
 mod core;
@@ -25,7 +26,7 @@ fn app(mut terminal: DefaultTerminal) -> Result<()> {
     let (master, _child) = shell()?;
     let output = Arc::new(Mutex::new(String::new()));
     let mut text = String::new();
-    let (reader, writer) = system_io(master.as_ref())?;
+    let (reader, mut writer) = system_io(master.as_ref())?;
     let _handle = output_shell(reader, output.clone());
 
     loop{
