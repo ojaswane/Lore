@@ -25,9 +25,9 @@ fn app(mut terminal: DefaultTerminal) -> Result<()> {
     let _handle = output_shell(reader, output.clone());
 
     loop {
-        let current_text = output.lock().unwrap().clone(); // This will draw the Ui to show onto the terminal and show the output as we want
+        let mut current_text = output.lock().unwrap().clone(); // This will draw the Ui to show onto the terminal and show the output as we want
         terminal.draw(|frame| {
-            ui::terminal::ui(frame, &mut text);
+            ui::terminal::ui(frame, &mut current_text);
         })?;
 
         // to match the events (To match the keys to be pressed)
