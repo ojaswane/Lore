@@ -25,7 +25,7 @@ fn app(mut terminal: DefaultTerminal) -> Result<()> {
     let (master, _child) = shell()?;
     let output = Arc::new(Mutex::new(String::new()));
     let mut text = String::new();
-    let (reader, _writer) = system_io(master.as_ref())?;
+    let (reader, writer) = system_io(master.as_ref())?;
     let _handle = output_shell(reader, output.clone());
 
     loop{
