@@ -15,6 +15,9 @@ fn main() -> Result<()> {
 
     // calling the app function to run the GUI
     app(terminal)?;
+
+    ratatui::restore();
+
     Ok(())
 }
 
@@ -29,9 +32,24 @@ fn app(mut terminal: DefaultTerminal) -> Result<()> {
     let _handle = output_shell(reader, parser.clone());
 
     loop {
-        let mut current_text = parser.screen().cell(0, 13).unwrap().fgcolor(); // This will draw the Ui to show onto the terminal and show the output as we want
+        let current_text = {
+            let parser_lock = parser.lock().unwrap();
+
+            let screen = parser_lock.screen();
+
+            let mut text = String::new();
+
+            for row in 0..screen.rows() {
+                let line = screen.contents_between(row, 0, row + 1, screen.cols());
+
+                text.push_str(&line);
+            }
+
+            text
+        };
+
         terminal.draw(|frame| {
-            ui::terminal::ui(frame, &mut current_text);
+            ui::terminal::ui(frame, &current_text);
         })?;
 
         // to match the events (To match the keys to be pressed)
