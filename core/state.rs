@@ -18,7 +18,7 @@ pub fn output_shell(
             match reader.read(&mut buffer) {
                 // read the output from the shell and store it in the buffer
                 Ok(n) if n > 0 => {
-                    let text = String::from_utf8_lossy(&buffer[..n]).to_string(); // convert the buffer to string and store it in the text variable
+                    // let text = String::from_utf8_lossy(&buffer[..n]).to_string(); // convert the buffer to string and store it in the text variable
 
                     let mut parser_lock = parser.lock().unwrap(); // locks the variable for one process at a time 
                     parser_lock.process(&buffer[..n]);
