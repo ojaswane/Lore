@@ -34,15 +34,18 @@ fn app(mut terminal: DefaultTerminal) -> Result<()> {
     loop {
         let current_text = {
             let parser_lock = parser.lock().unwrap();
-
             let screen = parser_lock.screen();
 
             let mut text = String::new();
 
             for row in 0..screen.rows() {
-                let line = screen.contents_between(row, 0, row + 1, screen.cols());
+                let Vec<String> line = screen.contents_between(row, 0, row, screen.cols());
 
+                for line in lines {
+                    text.push_str(&line);
+                }
                 text.push_str(&line);
+                text.push('\n');
             }
 
             text
