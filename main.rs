@@ -20,12 +20,16 @@ fn main() -> Result<()> {
 
 fn app(mut terminal: DefaultTerminal) -> Result<()> {
     let (master, _child) = shell()?;
-    let output = Arc::new(Mutex::new(String::new()));
+    // let output = Arc::new(Mutex::new(String::new()));
+
+    // this is the ANSI parser to parse the output from shell into the text
+    let parser = Arc::new(Mutex::new(vt100::Parser::new(24, 80, 0)));
+
     let (reader, mut writer) = system_io(master.as_ref())?;
-    let _handle = output_shell(reader, output.clone());
+    let _handle = output_shell(reader, parser.clone());
 
     loop {
-        let mut current_text = output.lock().unwrap().clone(); // This will draw the Ui to show onto the terminal and show the output as we want
+        let mut current_text = parser.screen().cell(0, 13).unwrap().fgcolor(); // This will draw the Ui to show onto the terminal and show the output as we want
         terminal.draw(|frame| {
             ui::terminal::ui(frame, &mut current_text);
         })?;
