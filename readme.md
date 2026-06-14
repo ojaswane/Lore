@@ -131,7 +131,6 @@ git clone https://github.com/ojaswane/lore.git
 cd lore
 
 # # install dependencies
-# pip install -r requirements.txt
 
 # run lore
 cargo run main.rs
