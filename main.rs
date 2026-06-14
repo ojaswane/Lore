@@ -35,11 +35,13 @@ fn app(mut terminal: DefaultTerminal) -> Result<()> {
         let current_text = {
             let parser_lock = parser.lock().unwrap();
             let screen = parser_lock.screen();
-            screen.rows(0, 80).collect::<Vec<String>>().join("\n")
+            let text = screen.rows(0, 80).collect::<Vec<String>>().join("\n");
+            let (crow, ccol) = screen.cursor_position();
+            (text, (ccol, crow))
         };
 
         terminal.draw(|frame| {
-            ui::terminal::ui(frame, &current_text);
+            ui::terminal::ui(frame, &current_text, cursor_pos);
         })?;
 
         // to match the events (To match the keys to be pressed)
