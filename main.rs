@@ -37,7 +37,7 @@ fn app(mut terminal: DefaultTerminal) -> Result<()> {
             let screen = parser_lock.screen();
             let text = screen.rows(0, 80).collect::<Vec<String>>().join("\n");
             let (crow, ccol) = screen.cursor_position();
-            (text, (ccol, crow))
+            (text, (crow, ccol))
         };
 
         terminal.draw(|frame| {
