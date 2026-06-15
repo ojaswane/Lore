@@ -17,9 +17,9 @@ pub fn ui(frame: &mut Frame<'_>, text: &str, cursor_pos: (u16, u16)) {
 
     // rendering the cursor
     let area = frame.area();
-    let (cx, cy) = cursor_pos;
+    let (row, col) = cursor_pos;
 
-    if cx < area.width && cy < area.height {
-        frame.set_cursor_position((area.x + cx, area.y + cy));
+    if col < area.width && row < area.height {
+        frame.set_cursor_position((area.x + col + 1, area.y + row + 1));
     }
 }
