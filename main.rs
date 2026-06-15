@@ -7,6 +7,7 @@ use std::io::Write;
 use std::sync::{Arc, Mutex};
 
 mod core;
+mod db;
 mod ui;
 
 // app starts
