@@ -94,6 +94,7 @@ fn app(mut terminal: DefaultTerminal) -> Result<()> {
                 }
 
                 // Print immediately after keypress
+                // heres how exactly this works : after typing the key the thread goes to sleep for 5 ms until the text is echoed into the shell
                 std::thread::sleep(std::time::Duration::from_millis(5)); // wait for shell to echo back
                 let (current_text, cursor_pos) = {
                     let parser_lock = parser.lock().unwrap();
