@@ -21,3 +21,11 @@ struct Session {
     project: String,     // inferred from dir — "lore", "hellorust" etc
     total_commands: i32, // quick stat without counting rows
 }
+
+pub fn init_db() {}
+
+pub fn session_init() {}
+
+pub fn save_command() {}
+
+pub fn end_session() {}

@@ -9,6 +9,18 @@ use std::sync::{Arc, Mutex};
 mod core;
 mod ui;
 
+// app starts
+// → init_db()
+// → start_session()
+// → loop
+//     → user types command
+//     → command runs
+//     → capture output + exit code + duration
+//     → save_command()
+// → user exits
+// → end_session()
+// NOTE , THIS IS FOR BETTER UNDERSTANDING
+
 fn main() -> Result<()> {
     //initialising the terminal
     let terminal = ratatui::init(); // crossterm is a backed for ratatui which can support windows
