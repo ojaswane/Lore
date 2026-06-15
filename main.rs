@@ -32,7 +32,7 @@ fn app(mut terminal: DefaultTerminal) -> Result<()> {
     let _handle = output_shell(reader, parser.clone());
 
     loop {
-        let current_text = {
+        let (current_text, cursor_pos) = {
             let parser_lock = parser.lock().unwrap();
             let screen = parser_lock.screen();
             let text = screen.rows(0, 80).collect::<Vec<String>>().join("\n");
@@ -53,19 +53,40 @@ fn app(mut terminal: DefaultTerminal) -> Result<()> {
                 }
 
                 KeyCode::Enter => {
-                    write!(writer, "\n")?;
+                    write!(writer, "\r")?; // \r instead of \n for PTY
                     writer.flush()?;
                 }
 
                 KeyCode::Backspace => {
-                    writer.write_all(&[8])?;
+                    writer.write_all(&[127])?; // 127 = DEL, better than 8 for most shells
                     writer.flush()?;
                 }
 
-                KeyCode::Esc => {
-                    break;
+                KeyCode::Tab => {
+                    write!(writer, "\t")?;
+                    writer.flush()?;
                 }
 
+                KeyCode::Up => {
+                    writer.write_all(b"\x1b[A")?;
+                    writer.flush()?;
+                }
+
+                KeyCode::Down => {
+                    writer.write_all(b"\x1b[B")?;
+                    writer.flush()?;
+                }
+
+                KeyCode::Left => {
+                    writer.write_all(b"\x1b[D")?;
+                    writer.flush()?;
+                }
+
+                KeyCode::Right => {
+                    writer.write_all(b"\x1b[C")?;
+                    writer.flush()?;
+                }
+                KeyCode::Esc => break,
                 _ => {}
             }
         }
