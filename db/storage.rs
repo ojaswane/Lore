@@ -1,5 +1,5 @@
 use super::schema;
-use rusqlite::{Connection, Result};
+use rusqlite::{Connection, Result, params};
 
 // to init the db
 pub fn init_db() -> Result<()> {
@@ -36,7 +36,16 @@ pub fn init_db() -> Result<()> {
 }
 
 // start the session
-pub fn session_init() {}
+pub fn session_init(conn: &Connection, project: &str) -> Result<_, _> {
+    let now = chrono::Utc::now().timestap();
+
+    conn.execute(
+        "INSERT INTO sessions (started_at, project) VALUES (?1, ?2)",
+        params![now, project],
+    )?;
+
+    Ok(conn.last_insert_rowid()) // returns the session_id
+}
 
 // save the commands
 pub fn save_command() {}
