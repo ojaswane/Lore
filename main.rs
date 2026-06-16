@@ -40,6 +40,7 @@ fn main() -> Result<()> {
     Ok(())
 }
 
+// TODO : ADD the Db inserting and deletion logic
 fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i64) -> Result<()> {
     let (master, _child) = shell()?;
     // let output = Arc::new(Mutex::new(String::new()));
