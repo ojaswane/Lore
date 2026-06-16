@@ -23,6 +23,10 @@ mod ui;
 // NOTE , THIS IS FOR BETTER UNDERSTANDING
 
 fn main() -> Result<()> {
+    // Initializing the db
+    let conn = db::storage::init_db()?;
+    let session_id = db::storage::session_init(conn, project)?;
+
     //initialising the terminal
     let terminal = ratatui::init(); // crossterm is a backed for ratatui which can support windows
 
