@@ -25,20 +25,22 @@ mod ui;
 fn main() -> Result<()> {
     // Initializing the db
     let conn = db::storage::init_db()?;
-    let session_id = db::storage::session_init(conn, project)?;
+    let session_id = db::storage::session_init(&conn, "lore")?;
 
     //initialising the terminal
     let terminal = ratatui::init(); // crossterm is a backed for ratatui which can support windows
 
     // calling the app function to run the GUI
-    app(terminal)?;
+    app(terminal, &conn, session_id)?;
 
+    // end session
+    let end_session = db::storage::end_session(conn, session_id)?;
     ratatui::restore();
 
     Ok(())
 }
 
-fn app(mut terminal: DefaultTerminal) -> Result<()> {
+fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i64) -> Result<()> {
     let (master, _child) = shell()?;
     // let output = Arc::new(Mutex::new(String::new()));
 
