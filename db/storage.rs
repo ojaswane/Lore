@@ -4,7 +4,11 @@ use rusqlite::{Connection, Result};
 // to init the db
 pub fn init_db() -> Result<()> {
     // initialising the table
-    let lore = Connection::open("lore.db");
+    let conn = Connection::open("lore.db")?;
+
+    // create the table
+
+    Ok(())
 }
 
 // start the session
