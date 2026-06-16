@@ -36,7 +36,7 @@ pub fn init_db() -> Result<()> {
 }
 
 // start the session
-pub fn session_init(conn: &Connection, project: &str) -> Result<()> {
+pub fn session_init(conn: &Connection, project: &str) -> Result<(i64)> {
     let now = chrono::Utc::now().timestap();
 
     conn.execute(

@@ -34,7 +34,7 @@ fn main() -> Result<()> {
     app(terminal, &conn, session_id)?;
 
     // end session
-    let end_session = db::storage::end_session(conn, session_id)?;
+    db::storage::end_session(conn, session_id)?;
     ratatui::restore();
 
     Ok(())
