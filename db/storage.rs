@@ -36,7 +36,7 @@ pub fn init_db() -> Result<()> {
 }
 
 // start the session
-pub fn session_init(conn: &Connection, project: &str) -> Result<_, _> {
+pub fn session_init(conn: &Connection, project: &str) -> Result<()> {
     let now = chrono::Utc::now().timestap();
 
     conn.execute(
@@ -48,7 +48,46 @@ pub fn session_init(conn: &Connection, project: &str) -> Result<_, _> {
 }
 
 // save the commands
-pub fn save_command() {}
+pub fn save_command(
+    conn: &Connection,
+    session_id: i64,
+    command: &str,
+    dir: &str,
+    output: &str,
+    exit_code: i32,
+    duration_ms: i64,
+) -> Result<()> {
+    let now = chrono::Utc::now().timestamp();
+    let error = if exit_code != 0 { 1 } else { 0 };
 
+    conn.execute(
+        "INSERT INTO commands 
+            (session_id, timestamp, command, dir, output, error, exit_code, duration_ms)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
+        params![
+            session_id,
+            now,
+            command,
+            dir,
+            output,
+            error,
+            exit_code,
+            duration_ms
+        ],
+    )?;
+
+    Ok(())
+}
 // end the session
-pub fn end_session() {}
+pub fn end_session(conn: &Connection, session_id: i64) -> Result<()> {
+    let now = chrono::Utc::now().timestamp();
+
+    conn.execute(
+        "UPDATE sessions SET ended_at = ?1,
+         total_commands = (SELECT COUNT(*) FROM commands WHERE session_id = ?2)
+         WHERE id = ?2",
+        params![now, session_id],
+    )?;
+
+    Ok(())
+}
