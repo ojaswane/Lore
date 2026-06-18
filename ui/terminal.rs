@@ -24,6 +24,12 @@ pub fn welcome() {
     render_bottombar(frame, chunks[2]);
 }
 
+fn render_topbar(frame: &mut Frame, area: ratatui::layout::Rect) {}
+
+fn render_body(frame: &mut Frame, area: ratatui::layout::Rect) {}
+
+fn render_bottombar(frame: &mut Frame, area: ratatui::layout::Rect) {}
+
 // pub fn ui(frame: &mut Frame<'_>, text: &str, cursor_pos: (u16, u16)) {
 //     // we use the frame and update it for some time and it will render the TUI
 
