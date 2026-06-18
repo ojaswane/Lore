@@ -24,7 +24,18 @@ pub fn welcome() {
     render_bottombar(frame, chunks[2]);
 }
 
-fn render_topbar(frame: &mut Frame, area: ratatui::layout::Rect) {}
+fn render_topbar(frame: &mut Frame, area: ratatui::layout::Rect) {
+    let line = Line::from(vec![
+        Span::styled("● ", Style::default().fg(Color::Green)),
+        Span::styled("Memory Active", Style::default().fg(Color::White)),
+        // version of the app
+        Span::raw("                                                "),
+        Span::styled("V 0.1.0", Style::default().fg(Color::White)),
+    ]);
+
+    //rendering the line
+    frame.render_widget(Paragraph::new(line), area)
+}
 
 fn render_body(frame: &mut Frame, area: ratatui::layout::Rect) {}
 
