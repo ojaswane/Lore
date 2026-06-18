@@ -6,6 +6,13 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph},
 };
 
+pub fn welcome() {
+    let area = Frame.area();
+
+    // spliting the terminal into 3 parts , top , body and bottom
+    let chunks = Layout::Default().directioan();
+}
+
 pub fn ui(frame: &mut Frame<'_>, text: &str, cursor_pos: (u16, u16)) {
     // we use the frame and update it for some time and it will render the TUI
 
