@@ -50,13 +50,9 @@ pub fn ui(frame: &mut Frame<'_>, text: &str, cursor_pos: (u16, u16)) {
         ])
         .split(frame.area());
 
-    frame.render_widget(paragraph, frame.area());
-
-    // rendering the cursor
-    let area = frame.area();
-    let (row, col) = cursor_pos;
-
-    if col < area.width && row < area.height {
-        frame.set_cursor_position((area.x + col + 1, area.y + row + 1));
-    }
+    // terminal output
+    frame.render_widget(
+        Paragraph::new(text).style(Style::default().fg(Color::White)),
+        chunks[0],
+    );
 }
