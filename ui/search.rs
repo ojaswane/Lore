@@ -8,6 +8,9 @@ use ratatui::{
 
 pub struct SearchState {
     pub query: String,
+    pub results: Vec<SearchResult>,
+    pub selected: usize,
+    pub filter: Filter,
 }
 
 pub enum Filter {
@@ -16,4 +19,12 @@ pub enum Filter {
     ThisWeek,
     Errors,
     Project,
+}
+
+pub struct SearchResult {
+    pub output: String,
+    pub cwd: String,
+    pub command: String,
+    pub exit_code: i32,
+    pub time_ago: String,
 }
