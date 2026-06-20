@@ -58,7 +58,7 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
 
     //checking if the user idle or typing for cursor animation
     let mut last_key_node = std::time::Instant::now();
-    let idle = std::time::Duration::from_millis(500);
+    let idle_min = std::time::Duration::from_millis(500);
     let mut is_idle = true;
 
     loop {
@@ -74,10 +74,22 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
             ui::terminal::ui(frame, &current_text, cursor_pos);
         })?;
 
+        if !is_idle && last_key_node.elapsed() > idle_min {
+            is_idle = true;
+            execute!(stdout(), cursor::SetCursorStyle::BlinkingBar)?;
+        }
+
         // to match the events (To match the keys to be pressed)
 
         if event::poll(std::time::Duration::from_millis(1))? {
             if let Event::Key(key) = event::read()? {
+                // went from idle to typing
+                if is_idle {
+                    is_idle = false;
+                    execute!(stdout(), cursor::SetCursorStyle::SteadyBlock)?;
+                }
+                last_keypress = std::time::Instant::now();
+
                 match key.code {
                     KeyCode::Char(c) => {
                         write!(writer, "{c}")?;
