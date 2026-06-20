@@ -67,4 +67,29 @@ pub fn ui(frame: &mut Frame<'_>, text: &str, cursor_pos: (u16, u16)) {
     render_statusbar(frame, chunks[1]);
 }
 
-fn render_statusbas() {}
+fn render_statusbas(frame: &mut Frame, area: ratatui::Layout::rect) {
+    let mut line = Line::from(vec![
+        Span::styled(" ● ", Style::default().fg(Color::Green)),
+        Span::styled("session active", Style::default()
+            .fg(Color::Rgb(80, 80, 100))),
+        Span::styled("  |  ", Style::default()
+            .fg(Color::Rgb(40, 40, 60))),
+        Span::styled(" main", Style::default()
+            .fg(Color::Rgb(124, 58, 237))),
+        Span::styled("  |  ", Style::default()
+            .fg(Color::Rgb(40, 40, 60))),
+        Span::styled("● ", Style::default()
+            .fg(Color::Rgb(96, 165, 250))),
+        Span::styled("42 cmds saved", Style::default()
+            .fg(Color::Rgb(80, 80, 100))),
+        // right side — push with spaces
+        Span::raw("                                    "),
+        Span::styled(" ctrl+l ", Style::default()
+            .fg(Color::Rgb(80, 80, 100))
+            .bg(Color::Rgb(30, 30, 40))),
+        Span::styled(" lore search ", Style::default()
+            .fg(Color::Rgb(80, 80, 100))),
+        Span::styled("  LORE", Style::default()
+            .fg(Color::Rgb(40, 40, 60))),
+    ])
+}
