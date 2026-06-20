@@ -101,11 +101,12 @@ lore/
 │
 ├── db/
 │   ├── storage.rs           # rusqlite — sessions, commands, output, exit codes
-│   └── search.rs           # query by keyword, date, project, exit code
+│   └── search.rs            # query by keyword, date, project, exit code
 │
 └── ui/
     ├── terminal.rs          # textual app, input handling, output display
-    └── history.rs          # lore search panel, session viewer
+    └── search.rs            # lore search panel, session viewer
+    └── ai.rs                # Ui for ai mode
 ```
 
 ---
