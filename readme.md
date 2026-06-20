@@ -98,7 +98,7 @@ lore/
 │   ├── state.rs             # Prints the result
 │   ├── pty.rs               # spawns a pty 
 │   └── io.rs                # read the output from shell
-│
+│   
 ├── db/
 │   ├── storage.rs           # rusqlite — sessions, commands, output, exit codes
 │   └── search.rs            # query by keyword, date, project, exit code

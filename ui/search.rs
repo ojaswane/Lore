@@ -30,4 +30,12 @@ pub struct SearchResult {
     pub time_ago: String,
 }
 
-pub fn ui(frame: &mut Frame, state: &SearchState) {}
+pub fn ui(frame: &mut Frame, state: &SearchState) {
+    let area = frame.area();
+
+    // overlay pannel
+    let panel = centered_rect(85, 75, area);
+
+    // clear the background behind panel
+    frame.render_width(Clear, panel);
+}
