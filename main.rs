@@ -56,6 +56,11 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
     let (reader, mut writer) = system_io(master.as_ref())?;
     let _handle = output_shell(reader, parser.clone());
 
+    //checking if the user idle or typing for cursor animation
+    let mut last_key_node = std::time::Instant::now();
+    let idle = std::time::Duration::from_millis(500);
+    let mut is_idle = true;
+
     loop {
         let (current_text, cursor_pos) = {
             let parser_lock = parser.lock().unwrap();
