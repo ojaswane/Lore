@@ -2,8 +2,10 @@
 use crate::core::{io::system_io, pty::shell, state::output_shell};
 use anyhow::Result; // this is the error handling library we will be using
 use crossterm::event::{self, Event, KeyCode}; // this is the library we will be using to handle the events of the terminal
+use crossterm::{cursor, execute};
 use ratatui::DefaultTerminal;
 use std::io::Write;
+use std::io::stdout;
 use std::sync::{Arc, Mutex};
 
 mod core;
@@ -23,6 +25,8 @@ mod ui;
 // NOTE , THIS IS FOR BETTER UNDERSTANDING
 
 fn main() -> Result<()> {
+    //cursor rendering from crossterm backend
+    execute!(stdout(), cursor::SetCursorStyle::BlinkingBar)?;
     // Initializing the db
     let conn = db::storage::init_db()?;
     let session_id = db::storage::session_init(&conn, "lore")?;
@@ -34,6 +38,7 @@ fn main() -> Result<()> {
     app(terminal, &conn, session_id)?;
 
     // end session
+    execute!(stdout(), cursor::SetCursorStyle::DefaultUserShape)?;
     db::storage::end_session(conn, session_id)?;
     ratatui::restore();
 
