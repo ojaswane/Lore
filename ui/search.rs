@@ -1,3 +1,4 @@
+// search will be activated when event key is cmd+s or ctrl+s
 use ratatui::{
     Frame,
     layout::{Constraint, Direction, Layout, Rect},
@@ -18,7 +19,7 @@ pub enum Filter {
     Today,
     ThisWeek,
     Errors,
-    Project,
+    Project, // showing which project are currently working on
 }
 
 pub struct SearchResult {
@@ -28,3 +29,5 @@ pub struct SearchResult {
     pub exit_code: i32,
     pub time_ago: String,
 }
+
+pub fn ui(frame: &mut Frame, state: &SearchState) {}
