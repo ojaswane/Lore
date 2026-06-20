@@ -96,4 +96,9 @@ fn render_statusbas(frame: &mut Frame, area: ratatui::Layout::rect) {
         ),
         Span::styled("  LORE", Style::default().fg(Color::Rgb(40, 40, 60))),
     ]);
+
+    frame.render_width(
+        Paragraph::new(line).style(Style::default().bg(Color::Rgb(10, 10, 18))),
+        area,
+    );
 }
