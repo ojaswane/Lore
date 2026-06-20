@@ -62,4 +62,9 @@ pub fn ui(frame: &mut Frame<'_>, text: &str, cursor_pos: (u16, u16)) {
     if col < chunks[0].width && row < chunks[0].height {
         frame.set_cursor_position((chunks[0].x + col, chunks[0].y + row));
     }
+
+    //render statusbar
+    render_statusbar(frame, chunks[1]);
 }
+
+fn render_statusbas() {}
