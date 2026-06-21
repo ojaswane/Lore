@@ -187,3 +187,34 @@ fn render_results(frame: &mut Frame, area: Rect, result: &[SearchResult], select
         area,
     );
 }
+
+fn render_search_footer(frame: &mut Frame, area: Rect, result: usize) {
+    let line = Line::from(vec![
+        Span::styled(
+            " ↑↓ ",
+            Style::default()
+                .fg(Color::Rgb(80, 80, 100))
+                .bg(Color::Rgb(25, 25, 35)),
+        ),
+        Span::styled(" navigate  ", Style::default().fg(Color::Rgb(60, 60, 80))),
+        Span::styled(
+            " ↵ ",
+            Style::default()
+                .fg(Color::Rgb(80, 80, 100))
+                .bg(Color::Rgb(25, 25, 35)),
+        ),
+        Span::styled(" run again  ", Style::default().fg(Color::Rgb(60, 60, 80))),
+        Span::styled(
+            " tab ",
+            Style::default()
+                .fg(Color::Rgb(80, 80, 100))
+                .bg(Color::Rgb(25, 25, 35)),
+        ),
+        Span::styled(" copy", Style::default().fg(Color::Rgb(60, 60, 80))),
+        Span::raw("                              "),
+        Span::styled(
+            format!("{} results", count),
+            Style::default().fg(Color::Rgb(60, 60, 80)),
+        ),
+    ]);
+}
