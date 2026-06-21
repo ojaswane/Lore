@@ -178,5 +178,12 @@ fn render_results(frame: &mut Frame, area: Rect, result: &[SearchResult], select
             Span::raw("  "),
             Span::styled(&result.dir, Style::default().fg(Color::Rgb(60, 60, 80))),
         ]));
+
+        lines.push(Line::from(""));
     }
+
+    frame.render_widget(
+        Paragraph::new(lines).style(Style::default().bg(Color::Rgb(12, 12, 18))),
+        area,
+    );
 }
