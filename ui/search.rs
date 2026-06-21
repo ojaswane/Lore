@@ -141,5 +141,11 @@ fn render_results(frame: &mut Frame, area: Rect, result: &[SearchResult], select
                 .fg(Color::Rgb(248, 113, 113))
                 .bg(Color::Rgb(40, 15, 15))
         };
+
+        let exit_label = if result.exit_code == 0 {
+            format!(" exit {} ", result.exit_code)
+        } else {
+            format!(" exit {} ", result.exit_code)
+        };
     }
 }
