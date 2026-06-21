@@ -147,5 +147,24 @@ fn render_results(frame: &mut Frame, area: Rect, result: &[SearchResult], select
         } else {
             format!(" exit {} ", result.exit_code)
         };
+
+        // command line
+        lines.push(Line::from(vec![
+            Span::raw(if is_selected { "▌ " } else { "  " }),
+            Span::styled(
+                &result.command,
+                Style::default()
+                    .fg(Color::White)
+                    .add_modifier(Modifier::BOLD)
+                    .bg(bg),
+            ),
+            Span::raw("    "),
+            Span::styled(exit_label, exit_style),
+            Span::raw("  "),
+            Span::styled(
+                &result.time_ago,
+                Style::default().fg(Color::Rgb(80, 80, 100)),
+            ),
+        ]));
     }
 }
