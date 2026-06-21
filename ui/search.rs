@@ -88,3 +88,34 @@ fn render_search_bar(frame: &mut Frame, area: Rect, query: &str) {
         area,
     );
 }
+
+fn render_filters(frame: &mut Frame, area: Rect, filters: &Filter) {
+    let chips = vec!["all", "today", "this week", "errors", "~/lore/Lore"];
+    let mut spans = vec![Span::raw("        ")];
+
+    for chip in chips {
+        let is_active = matches!(
+            (chip, filters),
+            ("all", Filter::All)
+                | ("today", Filter::Today)
+                | ("this week", Filter::ThisWeek)
+                | ("errors", Filter::Errors)
+        );
+
+        let style = if is_active {
+            Style::default()
+                .fg(Color::Rgb(167, 139, 250))
+                .bg(Color::Rgb(40, 20, 80))
+        } else {
+            Style::default().fg(Color::Rgb(80, 80, 100))
+        };
+
+        spans.push(Span::styled(format!(" {} ", chip), style));
+        spans.push(Span::raw("  "));
+    }
+
+    frame.render_widget(
+        Paragraph::new(spans).style(Style::default().bg(Color::Rgb(12, 12, 18))),
+        area,
+    )
+}
