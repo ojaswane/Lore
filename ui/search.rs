@@ -217,4 +217,9 @@ fn render_search_footer(frame: &mut Frame, area: Rect, result: usize) {
             Style::default().fg(Color::Rgb(60, 60, 80)),
         ),
     ]);
+
+    frame.render_widget(
+        Paragraph::new(line).style(Style::default().bg(Color::Rgb(12, 12, 18))),
+        area,
+    );
 }
