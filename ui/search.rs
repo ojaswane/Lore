@@ -166,5 +166,17 @@ fn render_results(frame: &mut Frame, area: Rect, result: &[SearchResult], select
                 Style::default().fg(Color::Rgb(80, 80, 100)),
             ),
         ]));
+
+        // output preview
+        lines.push(Line::from(vec![
+            Span::raw("  "),
+            Span::styled(&result.output, Style::default().fg(Color::Rgb(80, 80, 100))),
+        ]));
+
+        // dir
+        lines.push(Line::from(vec![
+            Span::raw("  "),
+            Span::styled(&result.dir, Style::default().fg(Color::Rgb(60, 60, 80))),
+        ]));
     }
 }
