@@ -119,3 +119,27 @@ fn render_filters(frame: &mut Frame, area: Rect, filters: &Filter) {
         area,
     )
 }
+
+fn render_results(frame: &mut Frame, area: Rect, result: &[SearchResult], selected: usize) {
+    let mut lines: Vec<Line> = vec![];
+
+    for (i, result) in result.iter().enumerate() {
+        let is_selected = i == selected;
+
+        let bg = if is_selected {
+            Color::Rgb(25, 20, 45)
+        } else {
+            Color::Rgb(12, 12, 18)
+        };
+
+        let exit_style = if result.exit_code == 0 {
+            Style::default()
+                .fg(Color::Rgb(74, 222, 128))
+                .bg(Color::Rgb(20, 40, 25))
+        } else {
+            Style::default()
+                .fg(Color::Rgb(248, 113, 113))
+                .bg(Color::Rgb(40, 15, 15))
+        };
+    }
+}
