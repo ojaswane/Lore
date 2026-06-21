@@ -38,4 +38,53 @@ pub fn ui(frame: &mut Frame, state: &SearchState) {
 
     // clear the background behind panel
     frame.render_width(Clear, panel);
+
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Length(3), // search bar
+            Constraint::Length(3), // filter chips
+            Constraint::Min(1),    // results
+            Constraint::Length(2), // footer hints
+        ])
+        .split(panel);
+
+    render_search_bar(frame, chunks[0], &state.query);
+    render_filters(frame, chunks[1], &state.filter);
+    render_results(frame, chunks[2], &state.results, state.selected);
+    render_search_footer(frame, chunks[3], state.results.len());
+}
+
+fn render_search_bar(frame: &mut Frame, area: Rect, query: &str) {
+    let line = Line::from(vec![
+        Span::styled(" 🔍 ", Style::default().fg(Color::Rgb(80, 80, 100))),
+        Span::styled(
+            query,
+            Style::default()
+                .fg(Color::White)
+                .add_modifier(Modifier::BOLD),
+        ),
+        Span::styled(
+            "█",
+            Style::default() // cursor
+                .fg(Color::Rgb(124, 58, 237)),
+        ),
+        Span::raw("          "),
+        Span::styled(
+            " esc ",
+            Style::default()
+                .fg(Color::Rgb(80, 80, 100))
+                .bg(Color::Rgb(30, 30, 40)),
+        ),
+    ]);
+
+    frame.render_widget(
+        Paragraph::new(line).block(
+            Block::default()
+                .borders(Borders::ALL)
+                .border_style(Style::default().fg(Color::Rgb(50, 50, 70)))
+                .style(Style::default().bg(Color::Rgb(15, 15, 22))),
+        ),
+        area,
+    );
 }
