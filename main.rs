@@ -32,6 +32,20 @@ enum AppMode {
 }
 
 fn main() -> Result<()> {
+    let mut search_state = ui::search::SearchState {
+        query: String::new(),
+        results: vec![],
+        selected: 0,
+        filter: ui::search::Filter::All,
+    };
+
+    let mut ai_state = ui::ai::AiState {
+        context: String::new(),
+        explanation: String::new(),
+        fix: String::new(),
+        what_it_does: String::new(),
+    };
+
     //cursor rendering from crossterm backend
     execute!(stdout(), cursor::SetCursorStyle::BlinkingBar)?;
     // Initializing the db
@@ -110,7 +124,7 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
 
                 match mode {
                     AppMode::Terminal => match key.code {
-                        KeyCode::Char('l') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                        KeyCode::Char('s') if key.modifiers.contains(KeyModifiers::CONTROL) => {
                             mode = AppMode::Search;
                         }
                         KeyCode::Char('e') if key.modifiers.contains(KeyModifiers::CONTROL) => {
@@ -149,6 +163,35 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                             writer.flush()?;
                         }
                         KeyCode::Esc => break,
+                        _ => {}
+                    },
+                    AppMode::Search => match key.code {
+                        KeyCode::Esc => {
+                            mode = AppMode::Terminal;
+                        }
+                        KeyCode::Up => {
+                            if search_state.selected > 0 {
+                                search_state.selected -= 1;
+                            }
+                        }
+                        KeyCode::Down => {
+                            if search_state.selected < search_state.results.len().saturating_sub(1)
+                            {
+                                search_state.selected += 1;
+                            }
+                        }
+                        KeyCode::Char(c) => {
+                            search_state.query.push(c);
+                        }
+                        KeyCode::Backspace => {
+                            search_state.query.pop();
+                        }
+                        _ => {}
+                    },
+                    AppMode::AiPanel => match key.code {
+                        KeyCode::Esc => {
+                            mode = AppMode::Terminal;
+                        }
                         _ => {}
                     },
                 }

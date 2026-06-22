@@ -77,7 +77,7 @@ fn render_ai_panel(frame: &mut Frame, area: Rect, state: &AiState) {
     );
 
     // explanation + fix
-    let mut body_lines = vec![
+    let body_lines = vec![
         Line::from(Span::styled(
             "  EXPLANATION",
             Style::default().fg(Color::Rgb(124, 58, 237)),
