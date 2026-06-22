@@ -1,12 +1,12 @@
 // search will be activated when event key is cmd+s or ctrl+s
+use ratatui::widgets::Clear;
 use ratatui::{
     Frame,
     layout::{Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Line, Span},
-    widgets::{Block, Borders, Clear, Paragraph},
+    widgets::{Block, Borders, Paragraph},
 };
-
 pub struct SearchState {
     pub query: String,
     pub results: Vec<SearchResult>,
@@ -24,7 +24,7 @@ pub enum Filter {
 
 pub struct SearchResult {
     pub output: String,
-    pub cwd: String,
+    pub dir: String,
     pub command: String,
     pub exit_code: i32,
     pub time_ago: String,
@@ -115,7 +115,7 @@ fn render_filters(frame: &mut Frame, area: Rect, filters: &Filter) {
     }
 
     frame.render_widget(
-        Paragraph::new(spans).style(Style::default().bg(Color::Rgb(12, 12, 18))),
+        Paragraph::new(Line::from(spans)).style(Style::default().bg(Color::Rgb(12, 12, 18))),
         area,
     )
 }
@@ -213,7 +213,7 @@ fn render_search_footer(frame: &mut Frame, area: Rect, result: usize) {
         Span::styled(" copy", Style::default().fg(Color::Rgb(60, 60, 80))),
         Span::raw("                              "),
         Span::styled(
-            format!("{} results", count),
+            format!("{} results", result),
             Style::default().fg(Color::Rgb(60, 60, 80)),
         ),
     ]);
