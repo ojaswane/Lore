@@ -24,6 +24,13 @@ mod ui;
 // → end_session()
 // NOTE , THIS IS FOR BETTER UNDERSTANDING
 
+// app state to track which screen is showing
+enum AppMode {
+    Terminal,
+    Search,
+    AiPanel,
+}
+
 fn main() -> Result<()> {
     //cursor rendering from crossterm backend
     execute!(stdout(), cursor::SetCursorStyle::BlinkingBar)?;
@@ -61,6 +68,11 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
     let idle_min = std::time::Duration::from_millis(500);
     let mut is_idle = true;
 
+    let mut mode = AppMode::Terminal;
+    let mut search_state = SearchState { ... };
+    let mut ai_state = AiState { ... };
+
+    
     loop {
         let (current_text, cursor_pos) = {
             let parser_lock = parser.lock().unwrap();
