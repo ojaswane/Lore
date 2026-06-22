@@ -1,7 +1,7 @@
 // Lets start our contribution by creating first a terminal emulator using ratatui
 use crate::core::{io::system_io, pty::shell, state::output_shell};
 use anyhow::Result; // this is the error handling library we will be using
-use crossterm::event::{self, Event, KeyCode}; // this is the library we will be using to handle the events of the terminal
+use crossterm::event::{self, Event, KeyCode, KeyModifiers}; // this is the library we will be using to handle the events of the terminal
 use crossterm::{cursor, execute};
 use ratatui::DefaultTerminal;
 use std::io::Write;
@@ -32,20 +32,6 @@ enum AppMode {
 }
 
 fn main() -> Result<()> {
-    let mut search_state = ui::search::SearchState {
-        query: String::new(),
-        results: vec![],
-        selected: 0,
-        filter: ui::search::Filter::All,
-    };
-
-    let mut ai_state = ui::ai::AiState {
-        context: String::new(),
-        explanation: String::new(),
-        fix: String::new(),
-        what_it_does: String::new(),
-    };
-
     //cursor rendering from crossterm backend
     execute!(stdout(), cursor::SetCursorStyle::BlinkingBar)?;
     // Initializing the db
@@ -60,14 +46,18 @@ fn main() -> Result<()> {
 
     // end session
     execute!(stdout(), cursor::SetCursorStyle::DefaultUserShape)?;
-    db::storage::end_session(conn, session_id)?;
+    db::storage::end_session(&conn, session_id)?;
     ratatui::restore();
 
     Ok(())
 }
 
 // TODO : ADD the Db inserting and deletion logic
-fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i64) -> Result<()> {
+fn app(
+    mut terminal: DefaultTerminal,
+    _conn: &rusqlite::Connection,
+    _session_id: i64,
+) -> Result<()> {
     let (master, _child) = shell()?;
     // let output = Arc::new(Mutex::new(String::new()));
 
@@ -83,6 +73,18 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
     let mut is_idle = true;
 
     let mut mode = AppMode::Terminal;
+    let mut search_state = ui::search::SearchState {
+        query: String::new(),
+        results: vec![],
+        selected: 0,
+        filter: ui::search::Filter::All,
+    };
+    let ai_state = ui::ai_panel::AiState {
+        context: String::new(),
+        explanation: String::new(),
+        fix: String::new(),
+        what_it_does: String::new(),
+    };
 
     loop {
         let (current_text, cursor_pos) = {
@@ -102,7 +104,7 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                 ui::search::ui(frame, &search_state);
             }
             AppMode::AiPanel => {
-                ui::ai::ui(frame, &current_text, cursor_pos, &ai_state);
+                ui::ai_panel::ui(frame, &current_text, cursor_pos, &ai_state);
             }
         })?;
 
@@ -124,10 +126,10 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
 
                 match mode {
                     AppMode::Terminal => match key.code {
-                        KeyCode::Char('s') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                        KeyCode::Char('s') if key.modifiers.contains(KeyModifiers::SUPER) => {
                             mode = AppMode::Search;
                         }
-                        KeyCode::Char('e') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                        KeyCode::Char('e') if key.modifiers.contains(KeyModifiers::SUPER) => {
                             mode = AppMode::AiPanel;
                         }
                         KeyCode::Char(c) => {

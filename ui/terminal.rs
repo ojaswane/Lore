@@ -1,9 +1,9 @@
 use ratatui::{
     Frame,
-    layout::{Alignment, Constraint, Direction, Layout},
-    style::{Color, Modifier, Style},
-    text::{Line, Span, Text},
-    widgets::{Block, Borders, Paragraph},
+    layout::{Constraint, Direction, Layout, Rect},
+    style::{Color, Style},
+    text::{Line, Span},
+    widgets::Paragraph,
 };
 
 // pub fn welcome() {
@@ -67,8 +67,8 @@ pub fn ui(frame: &mut Frame<'_>, text: &str, cursor_pos: (u16, u16)) {
     render_statusbar(frame, chunks[1]);
 }
 
-fn render_statusbar(frame: &mut Frame, area: ratatui::Layout::rect) {
-    let mut line = Line::from(vec![
+fn render_statusbar(frame: &mut Frame, area: Rect) {
+    let line = Line::from(vec![
         Span::styled(" ● ", Style::default().fg(Color::Green)),
         Span::styled(
             "session active",
@@ -85,7 +85,7 @@ fn render_statusbar(frame: &mut Frame, area: ratatui::Layout::rect) {
         // right side — push with spaces
         Span::raw("                                    "),
         Span::styled(
-            " ctrl+l ",
+            " cmd+s ",
             Style::default()
                 .fg(Color::Rgb(80, 80, 100))
                 .bg(Color::Rgb(30, 30, 40)),
@@ -97,7 +97,7 @@ fn render_statusbar(frame: &mut Frame, area: ratatui::Layout::rect) {
         Span::styled("  LORE", Style::default().fg(Color::Rgb(40, 40, 60))),
     ]);
 
-    frame.render_width(
+    frame.render_widget(
         Paragraph::new(line).style(Style::default().bg(Color::Rgb(10, 10, 18))),
         area,
     );

@@ -1,7 +1,7 @@
 use rusqlite::{Connection, Result, params};
 
 // to init the db
-pub fn init_db() -> Result<()> {
+pub fn init_db() -> Result<Connection> {
     // initialising the table
     let conn = Connection::open("lore.db")?;
 
@@ -31,7 +31,7 @@ pub fn init_db() -> Result<()> {
     ",
     )?;
 
-    Ok(())
+    Ok(conn)
 }
 
 // start the session
