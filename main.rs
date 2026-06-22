@@ -137,6 +137,11 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                             mode = AppMode::AiPanel;
                         }
                         KeyCode::Char(c) => {
+                            if command_started_at.is_none() {
+                                command_started_at = Some(std::time::Instant::now());
+                            }
+                            current_command.push(c);
+
                             write!(writer, "{c}")?;
                             writer.flush()?;
                         }
@@ -145,6 +150,9 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                             writer.flush()?;
                         }
                         KeyCode::Backspace => {
+                            // handelling pop
+                            current_command.pop();
+
                             writer.write_all(&[127])?;
                             writer.flush()?;
                         }
