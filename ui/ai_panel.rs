@@ -1,5 +1,19 @@
 // Ai pannel will be activated when user will press cmd + e / cntrl + e (to explain the error)
-// ui/ai.rs
+use ratatui::{
+    Frame,
+    layout::{Constraint, Direction, Layout, Rect},
+    style::{Color, Modifier, Style},
+    text::{Line, Span},
+    widgets::{Block, Borders, Paragraph},
+};
+
+pub struct AiState {
+    pub context: String,
+    pub explanation: String,
+    pub fix: String,
+    pub what_it_does: String,
+}
+
 pub fn ui(frame: &mut Frame, text: &str, cursor_pos: (u16, u16), ai_state: &AiState) {
     // split terminal and ai panel
     let chunks = Layout::default()
@@ -10,8 +24,7 @@ pub fn ui(frame: &mut Frame, text: &str, cursor_pos: (u16, u16), ai_state: &AiSt
         ])
         .split(frame.area());
 
-    render_terminal(frame, chunks[0], text, cursor_pos);
-
+    crate::ui::terminal::ui(frame, text, cursor_pos); // creates the ui for the terminal from terminal.rs
     // ai panel on right
     render_ai_panel(frame, chunks[1], ai_state);
 }
