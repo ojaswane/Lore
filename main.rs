@@ -58,13 +58,8 @@ fn main() -> Result<()> {
 
 // TODO : ADD the Db inserting and deletion logic
 // TODO : ADD Ollama implementations
-fn app(
-    mut terminal: DefaultTerminal,
-    _conn: &rusqlite::Connection,
-    _session_id: i64,
-) -> Result<()> {
+fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i64) -> Result<()> {
     let (master, _child) = shell()?;
-    // let output = Arc::new(Mutex::new(String::new()));
 
     // this is the ANSI parser to parse the output from shell into the text
     let parser = Arc::new(Mutex::new(vt100::Parser::new(24, 80, 0)));
@@ -90,6 +85,10 @@ fn app(
         fix: String::new(),
         what_it_does: String::new(),
     };
+
+    // Helpers to add save the commands
+    let mut current_command = String::new();
+    let mut command_started_at: Option<std::time::Instant> = None;
 
     loop {
         let (current_text, cursor_pos) = {
