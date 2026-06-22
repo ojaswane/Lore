@@ -6,40 +6,40 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph},
 };
 
-pub fn welcome() {
-    let area = Frame.area();
+// pub fn welcome() {
+//     let area = Frame.area();
 
-    // spliting the terminal into 3 parts , top , body and bottom
-    let chunks = Layout::Default()
-        .direction()
-        .constraints([
-            Constraint::Length(1), // top bar
-            Constraint::Min(1),    // body
-            Constraint::Length(1), // bottom bar
-        ])
-        .split(area);
+//     // spliting the terminal into 3 parts , top , body and bottom
+//     let chunks = Layout::Default()
+//         .direction()
+//         .constraints([
+//             Constraint::Length(1), // top bar
+//             Constraint::Min(1),    // body
+//             Constraint::Length(1), // bottom bar
+//         ])
+//         .split(area);
 
-    render_topbar(frame, chunks[0]);
-    render_body(frame, chunks[1]);
-    render_bottombar(frame, chunks[2]);
-}
+//     render_topbar(frame, chunks[0]);
+//     render_body(frame, chunks[1]);
+//     render_bottombar(frame, chunks[2]);
+// }
 
-fn render_topbar(frame: &mut Frame, area: ratatui::layout::Rect) {
-    let line = Line::from(vec![
-        Span::styled("● ", Style::default().fg(Color::Green)),
-        Span::styled("Memory Active", Style::default().fg(Color::White)),
-        // version of the app
-        Span::raw("                                                "),
-        Span::styled("V 0.1.0", Style::default().fg(Color::White)),
-    ]);
+// fn render_topbar(frame: &mut Frame, area: ratatui::layout::Rect) {
+//     let line = Line::from(vec![
+//         Span::styled("● ", Style::default().fg(Color::Green)),
+//         Span::styled("Memory Active", Style::default().fg(Color::White)),
+//         // version of the app
+//         Span::raw("                                                "),
+//         Span::styled("V 0.1.0", Style::default().fg(Color::White)),
+//     ]);
 
-    //rendering the line
-    frame.render_widget(Paragraph::new(line), area)
-}
+//     //rendering the line
+//     frame.render_widget(Paragraph::new(line), area)
+// }
 
-fn render_body(frame: &mut Frame, area: ratatui::layout::Rect) {}
+// fn render_body(frame: &mut Frame, area: ratatui::layout::Rect) {}
 
-fn render_bottombar(frame: &mut Frame, area: ratatui::layout::Rect) {}
+// fn render_bottombar(frame: &mut Frame, area: ratatui::layout::Rect) {}
 
 // Ui for main terminal
 pub fn ui(frame: &mut Frame<'_>, text: &str, cursor_pos: (u16, u16)) {
@@ -67,7 +67,7 @@ pub fn ui(frame: &mut Frame<'_>, text: &str, cursor_pos: (u16, u16)) {
     render_statusbar(frame, chunks[1]);
 }
 
-fn render_statusbas(frame: &mut Frame, area: ratatui::Layout::rect) {
+fn render_statusbar(frame: &mut Frame, area: ratatui::Layout::rect) {
     let mut line = Line::from(vec![
         Span::styled(" ● ", Style::default().fg(Color::Green)),
         Span::styled(
