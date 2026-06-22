@@ -1,4 +1,4 @@
-// Ai pannel will be activated when user will press cmd + e (to explain the error)
+// Ai pannel will be activated when user will press cmd+e or ctrl+e (to explain the error)
 use ratatui::{
     Frame,
     layout::{Constraint, Direction, Layout, Rect},

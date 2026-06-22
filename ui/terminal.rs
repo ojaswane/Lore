@@ -82,10 +82,10 @@ fn render_statusbar(frame: &mut Frame, area: Rect) {
             "42 cmds saved",
             Style::default().fg(Color::Rgb(80, 80, 100)),
         ),
-        // right side — push with spaces
+        // right side push with spaces
         Span::raw("                                    "),
         Span::styled(
-            " cmd+s ",
+            " cmd+l ",
             Style::default()
                 .fg(Color::Rgb(80, 80, 100))
                 .bg(Color::Rgb(30, 30, 40)),

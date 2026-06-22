@@ -31,6 +31,10 @@ enum AppMode {
     AiPanel,
 }
 
+fn is_app_shortcut(modifiers: KeyModifiers) -> bool {
+    modifiers.contains(KeyModifiers::SUPER) || modifiers.contains(KeyModifiers::CONTROL)
+}
+
 fn main() -> Result<()> {
     //cursor rendering from crossterm backend
     execute!(stdout(), cursor::SetCursorStyle::BlinkingBar)?;
@@ -126,10 +130,10 @@ fn app(
 
                 match mode {
                     AppMode::Terminal => match key.code {
-                        KeyCode::Char('l') if key.modifiers.contains(KeyModifiers::SUPER) => {
+                        KeyCode::Char('l') if is_app_shortcut(key.modifiers) => {
                             mode = AppMode::Search;
                         }
-                        KeyCode::Char('e') if key.modifiers.contains(KeyModifiers::SUPER) => {
+                        KeyCode::Char('e') if is_app_shortcut(key.modifiers) => {
                             mode = AppMode::AiPanel;
                         }
                         KeyCode::Char(c) => {
@@ -208,8 +212,17 @@ fn app(
                     let (crow, ccol) = screen.cursor_position();
                     (text, (crow, ccol))
                 };
-                terminal.draw(|frame| {
-                    ui::terminal::ui(frame, &current_text, cursor_pos);
+                terminal.draw(|frame| match mode {
+                    AppMode::Terminal => {
+                        ui::terminal::ui(frame, &current_text, cursor_pos);
+                    }
+                    AppMode::Search => {
+                        ui::terminal::ui(frame, &current_text, cursor_pos);
+                        ui::search::ui(frame, &search_state);
+                    }
+                    AppMode::AiPanel => {
+                        ui::ai_panel::ui(frame, &current_text, cursor_pos, &ai_state);
+                    }
                 })?;
             }
         }

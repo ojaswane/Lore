@@ -1,4 +1,4 @@
-// search will be activated when event key is cmd+s
+// search will be activated when event key is cmd+l or ctrl+l
 use ratatui::widgets::Clear;
 use ratatui::{
     Frame,
