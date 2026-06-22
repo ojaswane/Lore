@@ -148,6 +148,14 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                         KeyCode::Enter => {
                             write!(writer, "\r")?;
                             writer.flush()?;
+
+                            let command = current_command;
+
+                            if !command.is_empty() {
+                                let duration_ms = command_started_at
+                                    .map(|t| t.elapsed().as_millis() as i64)
+                                    .unwrap_or(0);
+                            }
                         }
                         KeyCode::Backspace => {
                             // handelling pop
