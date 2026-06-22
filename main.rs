@@ -69,10 +69,7 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
     let mut is_idle = true;
 
     let mut mode = AppMode::Terminal;
-    let mut search_state = SearchState { ... };
-    let mut ai_state = AiState { ... };
 
-    
     loop {
         let (current_text, cursor_pos) = {
             let parser_lock = parser.lock().unwrap();
@@ -82,13 +79,22 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
             (text, (crow, ccol))
         };
 
-        terminal.draw(|frame| {
-            ui::terminal::ui(frame, &current_text, cursor_pos);
+        terminal.draw(|frame| match mode {
+            AppMode::Terminal => {
+                ui::terminal::ui(frame, &current_text, cursor_pos);
+            }
+            AppMode::Search => {
+                ui::terminal::ui(frame, &current_text, cursor_pos);
+                ui::search::ui(frame, &search_state);
+            }
+            AppMode::AiPanel => {
+                ui::ai::ui(frame, &current_text, cursor_pos, &ai_state);
+            }
         })?;
 
         if !is_idle && last_key_node.elapsed() > idle_min {
             is_idle = true;
-            execute!(stdout(), cursor::SetCursorStyle::BlinkingBar)?;
+            let _ = execute!(stdout(), cursor::SetCursorStyle::BlinkingBar);
         }
 
         // to match the events (To match the keys to be pressed)
@@ -100,7 +106,7 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                     is_idle = false;
                     execute!(stdout(), cursor::SetCursorStyle::SteadyBlock)?;
                 }
-                last_keypress = std::time::Instant::now();
+                last_key_node = std::time::Instant::now();
 
                 match key.code {
                     KeyCode::Char(c) => {
