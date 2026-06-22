@@ -1,4 +1,3 @@
-use super::schema;
 use rusqlite::{Connection, Result, params};
 
 // to init the db
@@ -36,8 +35,8 @@ pub fn init_db() -> Result<()> {
 }
 
 // start the session
-pub fn session_init(conn: &Connection, project: &str) -> Result<(i64)> {
-    let now = chrono::Utc::now().timestap();
+pub fn session_init(conn: &Connection, project: &str) -> Result<i64> {
+    let now = chrono::Utc::now().timestamp();
 
     conn.execute(
         "INSERT INTO sessions (started_at, project) VALUES (?1, ?2)",
