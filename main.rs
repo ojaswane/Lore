@@ -108,49 +108,49 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                 }
                 last_key_node = std::time::Instant::now();
 
-                match key.code {
-                    KeyCode::Char(c) => {
-                        write!(writer, "{c}")?;
-                        writer.flush()?;
-                    }
-
-                    KeyCode::Enter => {
-                        write!(writer, "\r")?; // \r instead of \n for PTY
-                        writer.flush()?;
-                    }
-
-                    KeyCode::Backspace => {
-                        writer.write_all(&[127])?; // 127 = DEL, better than 8 for most shells
-                        writer.flush()?;
-                    }
-
-                    KeyCode::Tab => {
-                        write!(writer, "\t")?;
-                        writer.flush()?;
-                    }
-
-                    KeyCode::Up => {
-                        writer.write_all(b"\x1b[A")?;
-                        writer.flush()?;
-                    }
-
-                    KeyCode::Down => {
-                        writer.write_all(b"\x1b[B")?;
-                        writer.flush()?;
-                    }
-
-                    KeyCode::Left => {
-                        writer.write_all(b"\x1b[D")?;
-                        writer.flush()?;
-                    }
-
-                    KeyCode::Right => {
-                        writer.write_all(b"\x1b[C")?;
-                        writer.flush()?;
-                    }
-                    KeyCode::Esc => break,
-
-                    _ => {}
+                match mode {
+                    AppMode::Terminal => match key.code {
+                        KeyCode::Char('l') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                            mode = AppMode::Search;
+                        }
+                        KeyCode::Char('e') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                            mode = AppMode::AiPanel;
+                        }
+                        KeyCode::Char(c) => {
+                            write!(writer, "{c}")?;
+                            writer.flush()?;
+                        }
+                        KeyCode::Enter => {
+                            write!(writer, "\r")?;
+                            writer.flush()?;
+                        }
+                        KeyCode::Backspace => {
+                            writer.write_all(&[127])?;
+                            writer.flush()?;
+                        }
+                        KeyCode::Tab => {
+                            write!(writer, "\t")?;
+                            writer.flush()?;
+                        }
+                        KeyCode::Up => {
+                            writer.write_all(b"\x1b[A")?;
+                            writer.flush()?;
+                        }
+                        KeyCode::Down => {
+                            writer.write_all(b"\x1b[B")?;
+                            writer.flush()?;
+                        }
+                        KeyCode::Left => {
+                            writer.write_all(b"\x1b[D")?;
+                            writer.flush()?;
+                        }
+                        KeyCode::Right => {
+                            writer.write_all(b"\x1b[C")?;
+                            writer.flush()?;
+                        }
+                        KeyCode::Esc => break,
+                        _ => {}
+                    },
                 }
 
                 // Print immediately after keypress

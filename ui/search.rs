@@ -37,7 +37,7 @@ pub fn ui(frame: &mut Frame, state: &SearchState) {
     let panel = centered_rect(85, 75, area);
 
     // clear the background behind panel
-    frame.render_width(Clear, panel);
+    frame.render_widget(Clear, panel);
 
     let chunks = Layout::default()
         .direction(Direction::Vertical)
