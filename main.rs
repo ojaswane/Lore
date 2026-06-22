@@ -126,7 +126,7 @@ fn app(
 
                 match mode {
                     AppMode::Terminal => match key.code {
-                        KeyCode::Char('s') if key.modifiers.contains(KeyModifiers::SUPER) => {
+                        KeyCode::Char('l') if key.modifiers.contains(KeyModifiers::SUPER) => {
                             mode = AppMode::Search;
                         }
                         KeyCode::Char('e') if key.modifiers.contains(KeyModifiers::SUPER) => {
