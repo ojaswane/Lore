@@ -22,6 +22,18 @@ pub enum Filter {
     Project, // showing which project are currently working on
 }
 
+impl Filter {
+    pub fn next(&self) -> Self {
+        match self {
+            Self::All => Self::Today,
+            Self::Today => Self::ThisWeek,
+            Self::ThisWeek => Self::Errors,
+            Self::Errors => Self::Project,
+            Self::Project => Self::All,
+        }
+    }
+}
+
 pub struct SearchResult {
     pub output: String,
     pub dir: String,
@@ -100,6 +112,7 @@ fn render_filters(frame: &mut Frame, area: Rect, filters: &Filter) {
                 | ("today", Filter::Today)
                 | ("this week", Filter::ThisWeek)
                 | ("errors", Filter::Errors)
+                | ("~/lore/Lore", Filter::Project)
         );
 
         let style = if is_active {

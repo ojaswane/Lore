@@ -149,13 +149,28 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                             write!(writer, "\r")?;
                             writer.flush()?;
 
-                            let command = current_command;
+                            let command = std::mem::take(&mut current_command);
 
                             if !command.is_empty() {
                                 let duration_ms = command_started_at
                                     .map(|t| t.elapsed().as_millis() as i64)
                                     .unwrap_or(0);
+                                let dir = std::env::current_dir()
+                                    .map(|path| path.display().to_string())
+                                    .unwrap_or_else(|_| String::from("."));
+
+                                db::storage::save_command(
+                                    conn,
+                                    session_id,
+                                    &command,
+                                    &dir,
+                                    &current_text,
+                                    0,
+                                    duration_ms,
+                                )?;
                             }
+
+                            command_started_at = None;
                         }
                         KeyCode::Backspace => {
                             // handelling pop
@@ -207,6 +222,9 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                         }
                         KeyCode::Backspace => {
                             search_state.query.pop();
+                        }
+                        KeyCode::Tab => {
+                            search_state.filter = search_state.filter.next();
                         }
                         _ => {}
                     },
