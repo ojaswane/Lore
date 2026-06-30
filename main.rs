@@ -56,7 +56,6 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-// TODO : ADD the Db inserting and deletion logic
 // TODO : ADD Ollama implementations
 fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i64) -> Result<()> {
     let (master, _child) = shell()?;
