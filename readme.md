@@ -1,8 +1,6 @@
 <div align="center">
 
-<!-- logo goes here -->
-
-<img src="./assets/lore-owl.png" width="400" alt="Lore — owl with a big brain" />
+<img src="./assets/lore-owl.png" width="400" alt="Lore owl logo" />
 
 # Lore
 
@@ -10,187 +8,214 @@
 
 *Every command. Every output. Every session. Stored locally, forever.*
 
-<!-- [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-a78bfa.svg)](https://python.org)
-[![Status: Building](https://img.shields.io/badge/Status-Building-fbbf24.svg)]()
-[![Contributors Welcome](https://img.shields.io/badge/Contributors-Welcome-4ade80.svg)](CONTRIBUTING.md) -->
+<!--
+[![Rust](https://img.shields.io/badge/Rust-2024-f97316.svg)](https://www.rust-lang.org/)
+[![Status: Pre--alpha](https://img.shields.io/badge/Status-Pre--alpha-fbbf24.svg)]()
+[![Contributors Welcome](https://img.shields.io/badge/Contributors-Welcome-4ade80.svg)](CONTRIBUTING.md)
+-->
 
 </div>
+
 ---
 
 ## What is Lore?
 
-Every project has a story the commands you ran, the errors you hit, the fixes that worked, the decisions you made at 2am. Most terminals let all of that disappear the moment you close the window.
+Every project has a story: the commands you ran, the errors you hit, the fixes that worked, and the decisions you made late at night. Most terminals let all of that disappear the moment you close the window.
 
 Lore doesn't.
 
-Lore is a terminal emulator that stores the **lore of your work** session by session, project by project. It looks and feels like a regular terminal. But underneath, it's building a searchable, compressed, local database of everything you've ever done.
+Lore is a local terminal emulator with a memory layer. It looks and feels like a normal terminal, but underneath it stores your sessions, commands, output, working directories, timestamps, and exit metadata in a local SQLite database.
 
-No cloud. No account. No creepiness. Just your lore, on your machine.
+No cloud. No account. No remote sync. Just your lore, on your machine.
 
 ---
 
 ## Why Lore?
 
-| Problem | Every other terminal | Lore |
+| Problem | Most terminals | Lore |
 |---|---|---|
-| Session history | Lost on close | Stored forever |
-| Command output | Gone | Saved + compressed |
-| Searching past work | `grep ~/.zsh_history` (commands only) | Full semantic search |
-| Privacy | Cloud sync (Warp) or nothing | 100% local, SQLite |
-| Storage | Unlimited bloat | Smart tiered compression |
-| AI features | Requires internet + account | Local LLM via Ollama |
+| Session history | Lost when the terminal closes | Stored locally |
+| Command output | Gone once it scrolls away | Saved with the command |
+| Searching past work | Usually command history only | Search commands and output |
+| Privacy | Often cloud sync or accounts | 100% local SQLite |
+| AI help | Usually internet/account based | Planned local Ollama support |
 
 ---
 
-## Features (building now)
+## Current Features
 
-- **Session storage** — every session saved with timestamps, working directory, exit codes, and full output
-- **Smart compression** — tiered zlib compression by age. Your entire year of terminal history fits in under 100MB
-- **`lore search`** — search across all past sessions by keyword, project, date, or exit code
-- **Feels like a real terminal** — no blocks, no sidebars, no startup screens. just a clean terminal with a memory
-- **Local AI (coming soon)** — Ollama integration for private, offline error explanation and command suggestions
-- **Automation layer (coming soon)** — schedule tasks, post things, book appointments, get notified when done
+- **Terminal UI** - a Ratatui-based terminal interface backed by a real shell PTY.
+- **PTY shell spawning** - runs an actual shell through `portable-pty`.
+- **Session storage** - creates sessions in SQLite with start/end timestamps.
+- **Command storage** - saves typed commands with working directory, output snapshot, exit code field, and duration.
+- **Search overlay UI** - `Ctrl+L` / `Cmd+L` opens the in-app search panel.
+- **AI panel UI** - `Ctrl+E` / `Cmd+E` opens the assistant panel shell, ready for Ollama integration.
+
+Lore is still pre-alpha. Some pieces are intentionally rough while the core loop is being shaped.
+
+---
+
+## In Progress
+
+- Wiring the search overlay to real SQLite queries.
+- Capturing cleaner command output after a command finishes.
+- Recording real exit codes instead of placeholder values.
+- Adding local AI explanations through Ollama.
+- Adding focused tests for storage and search.
 
 ---
 
 ## Architecture
 
-```
+```text
 You type a command
-       ↓
-  PTY layer          ←  ptyprocess (spawns the real shell)
-       ↓
-  Interceptor        ←  captures command + output + metadata
-      / \
-     /   \
- Shell   Lore DB     ←  SQLite (local, compressed, searchable)
-     \   /
-      \ /
-   Renderer          ←  Textual UI (looks like a normal terminal)
+       |
+       v
+  Ratatui UI
+       |
+       v
+  PTY layer              portable-pty spawns the real shell
+       |
+       v
+  Output reader          reads shell output in a background thread
+       |
+       v
+  vt100 parser           converts terminal bytes into screen state
+       |
+       v
+  Lore DB                SQLite sessions + commands + output
 ```
+
+Lore is built around a normal shell running inside a pseudo-terminal. The app proxies keyboard input into the shell, reads shell output, renders the terminal screen with Ratatui, and stores session history in SQLite.
 
 ---
 
-## The system design
+## Folder Structure
 
-Lore is built as a local terminal emulator with a memory layer that lives alongside the shell. The system design focuses on capturing commands and output in real time, storing them in a compressed SQLite database, and rendering the terminal UI so it feels like a normal shell.
-
-- `PTY layer` spawns the real shell and proxies stdin/stdout.
-- `Interceptor` captures commands, outputs, metadata, and sends them to storage.
-- `Lore DB` stores sessions, commands, outputs, and exit codes in a local SQLite file.
-- `Renderer` displays terminal output with no additional UI chrome.
-
-View the full design diagram here:
-
-https://excalidraw.com/#json=F041fX85vcvojEIwq7Yqc,3KJ5kW-5muuxaq9lSvPfDQ
-
----
-
-## Folder structure
-
-```
-lore/
-├── main.rs                  # entry point
-├── config.toml              # user settings (theme, storage limit)
-├── requirements.txt
+```text
+Lore/
+├── Cargo.toml              # Rust package and dependencies
+├── Cargo.lock
+├── main.rs                 # app entry point, event loop, mode switching
+├── config.toml             # local configuration
+├── lore.db                 # local SQLite database
 │
 ├── core/
-│   ├── state.rs             # Prints the result
-│   ├── pty.rs               # spawns a pty 
-│   └── io.rs                # read the output from shell
-│   
-├── db/
-│   ├── storage.rs           # rusqlite — sessions, commands, output, exit codes
-│   └── search.rs            # query by keyword, date, project, exit code
+│   ├── io.rs               # PTY reader/writer setup
+│   ├── pty.rs              # shell spawning through portable-pty
+│   └── state.rs            # background output reader + vt100 parser updates
 │
-└── ui/
-    ├── terminal.rs          # textual app, input handling, output display
-    └── search.rs            # lore search panel, session viewer
-    └── ai.rs                # Ui for ai mode
+├── db/
+│   ├── storage.rs          # SQLite session and command writes
+│   ├── search.rs           # search/query layer
+│   └── schema.txt          # database schema notes
+│
+├── ui/
+│   ├── terminal.rs         # terminal renderer
+│   ├── search.rs           # search panel UI
+│   └── ai_panel.rs         # AI assistant panel UI
+│
+└── assets/
+    └── lore-owl.png
 ```
 
 ---
 
-## Tech stack
+## Tech Stack
 
-- **Rust** — core language
-- **portable-pty** — PTY shell spawning
-- **ratatui** — terminal UI framework
-- **rusqlite** — local session storage (built into Python, zero setup)
-- **flate2** — compression
-- **reqwest (HTTP calls to Ollama API)** (coming soon) — local AI integration
+- **Rust 2024** - core language.
+- **Ratatui** - terminal UI rendering.
+- **Crossterm** - terminal input/output backend.
+- **portable-pty** - pseudo-terminal shell spawning.
+- **vt100** - terminal output parsing.
+- **rusqlite** - local SQLite storage.
+- **chrono** - timestamps.
+- **uuid** - session/id utilities.
+- **Ollama** - planned local AI integration.
 
 ---
 
-## Getting started
+## Getting Started
 
-> Lore is actively being built. This is a pre-alpha. Things will break.
+> Lore is actively being built. Expect rough edges.
 
 ```bash
-# clone the repo
 git clone https://github.com/ojaswane/lore.git
-cd lore
-
-# # install dependencies
-
-# run lore
-cargo run main.rs
+cd lore/Lore
+cargo run
 ```
+
+Inside Lore:
+
+```text
+Esc             exit Lore
+Ctrl+L / Cmd+L  open search
+Ctrl+E / Cmd+E  open AI panel
+```
+
+To check that the project compiles:
+
+```bash
+cargo check
+```
+
+---
+
+## Local Data
+
+Lore stores data in:
+
+```text
+lore.db
+```
+
+The database currently has two main tables:
+
+- `sessions` - one row per Lore session.
+- `commands` - command text, directory, output snapshot, exit code field, and duration.
+
+Everything stays local.
 
 ---
 
 ## Roadmap
 
-```
-v0.1  ✦  working terminal (portable-pty shell + ratatui UI)
-v0.2  ✦  session storage (rusqlite, commands + output)
-v0.3  ✦  smart compression (flate2, tiered by age)
-v0.4  ✦  lore search (search past sessions)
-v0.5  ✦  local AI via ollama (error explanation, suggestions)
-v0.6  ✦  automation layer (scheduling, notifications)
-v1.0  ✦  stable release
+```text
+v0.1  working terminal UI with portable-pty + Ratatui
+v0.2  SQLite session and command storage
+v0.3  search overlay backed by real database queries
+v0.4  cleaner output capture and real exit codes
+v0.5  local AI explanations through Ollama
+v0.6  command suggestions and safe agent actions
+v1.0  stable local-first terminal memory
 ```
 
 ---
 
 ## Contributing
 
-Lore is being built in the open and contributors are genuinely welcome — whether you're fixing bugs, building features, improving docs, or just trying it out and filing issues.
+Lore is being built in the open, and contributions are welcome.
 
-**Good first issues to pick up:**
+Good first areas:
 
-- `good first issue` — tagged issues for new contributors
-- improving the compression logic in `core/compressor.py`
-- adding keyboard shortcuts to the Textual UI
-- writing tests for the SQLite storage layer
-- improving ANSI escape code handling
+- Wire `ui/search.rs` to `db/search.rs`.
+- Add SQLite tests for `db/storage.rs`.
+- Improve command/output capture.
+- Record real shell exit codes.
+- Add the Ollama client for the AI panel.
+- Improve terminal rendering and ANSI handling.
 
-**To contribute:**
-
-```bash
-# fork the repo, then
-git checkout -b feature/your-feature-name
-# make your changes
-git commit -m "what you did"
-git push origin feature/your-feature-name
-# open a pull request
-```
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a PR.
+Before opening a PR, please read [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
 ## Philosophy
 
-Lore is built on three principles:
+**Local first.** Your data should stay on your machine. No account, no server, no cloud dependency.
 
-**Local first.** Your data never leaves your machine. No account, no server, no cloud sync. Everything is in a SQLite file on your disk that you can inspect, back up, or delete at any time.
+**Feels like a terminal.** Lore should behave like a real terminal first. The memory layer should help without getting in the way.
 
-**Feels like a terminal.** No sidebars. No blocks. No AI chat bubbles. Lore looks and behaves like a real terminal — because it is one. The memory layer is invisible until you need it.
-
-**Builds over time.** The longer you use Lore, the more useful it gets. Your history becomes searchable context. Your patterns become suggestions. Your lore becomes yours.
-
----
+**Builds over time.** The longer you use Lore, the more useful your local history becomes.
 
 ---
 
