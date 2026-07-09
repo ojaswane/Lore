@@ -1,100 +1,231 @@
 # Contributing to Lore
 
-First off — thanks for being here. Lore is being built in the open and every contribution matters, whether it's a bug fix, a new feature, a typo, or just trying it out and telling us what broke.
+Thanks for wanting to help build Lore.
+
+Lore is a local-first terminal memory tool: a terminal that remembers the commands you ran, the output they produced, the projects they belonged to, and the fixes that worked. The goal is not to become another generic terminal emulator. The goal is to make terminal work easier to search, understand, and continue later.
+
+Lore is still pre-alpha, so rough edges are expected. Good contributions should make the core loop more reliable:
+
+```text
+run command -> capture what happened -> search it later -> reuse the fix
+```
 
 ---
 
-## Before you start
+## Project Status
 
-Lore is pre-alpha. Things are incomplete, things will break, and the architecture is still evolving. That's not a warning to stay away — it's an invitation to help shape it.
+The current app is written in Rust and uses:
 
-If you're unsure whether your idea fits, open an issue first and talk about it. No PR should be a surprise.
+- `ratatui` for the terminal UI
+- `crossterm` for input/output events
+- `portable-pty` for spawning a real shell
+- `vt100` for terminal output parsing
+- `rusqlite` for local SQLite storage
+
+Some parts are already started:
+
+- PTY-backed terminal UI
+- SQLite sessions and command storage
+- search overlay UI
+- AI panel UI shell
+
+Some parts are still incomplete:
+
+- real database-backed search results
+- clean per-command output capture
+- real exit code capture
+- project-aware history
+- failure-to-fix memory
+- local AI explanations through Ollama
 
 ---
 
-## How to contribute
+## Before You Start
 
-### 1. Find something to work on
+If you are proposing a larger feature, open an issue first so the direction can be discussed.
 
-- Check the [issues](../../issues) tab for open tasks
-- Look for issues tagged `good first issue` if you're new
-- Or open a new issue if you found a bug or have an idea
+Keep Lore local-first. Contributions should not require accounts, cloud sync, telemetry, or remote services for the core app to work.
 
-### 2. Fork and clone
+---
+
+## Getting Set Up
+
+Fork and clone the repository:
 
 ```bash
 git clone https://github.com/yourusername/lore.git
-cd lore
-pip install -r requirements.txt
+cd lore/Lore
 ```
 
-### 3. Create a branch
+Check that the project builds:
 
 ```bash
-git checkout -b feature/your-feature-name
+cargo check
+```
+
+Run Lore locally:
+
+```bash
+cargo run
+```
+
+Inside Lore:
+
+```text
+Esc             exit Lore
+Ctrl+L / Cmd+L  open search
+Ctrl+E / Cmd+E  open AI panel
+```
+
+---
+
+## How To Contribute
+
+### 1. Choose a focused change
+
+Good pull requests usually do one thing:
+
+- fix one bug
+- add one small feature
+- improve one part of the UI
+- add tests for one module
+- update one piece of documentation
+
+Avoid mixing unrelated refactors with feature work.
+
+### 2. Create a branch
+
+```bash
+git checkout -b feature/search-results
 # or
-git checkout -b fix/what-you-are-fixing
+git checkout -b fix/session-count
 ```
 
-### 4. Make your changes
+### 3. Make the change
 
-Keep changes focused. One thing per PR. A PR that fixes a bug AND adds a feature AND refactors something is hard to review.
+Follow the current module boundaries:
 
-### 5. Test it
+- `main.rs` handles app startup, event routing, and mode switching.
+- `core/` contains PTY, IO, shell output, and AI-related logic.
+- `db/` contains SQLite storage and search logic.
+- `ui/` contains Ratatui rendering code.
 
-Run Lore and make sure it actually works before submitting:
+### 4. Test it
+
+At minimum, run:
 
 ```bash
-python main.py
+cargo check
 ```
 
-If you're touching the storage layer, make sure sessions save and load correctly. If you're touching the UI, make sure the terminal still feels like a terminal.
+If you touch formatting-sensitive code, also run:
 
-### 6. Open a pull request
+```bash
+cargo fmt
+```
 
-Push your branch and open a PR against `main`. In the PR description, explain:
+If tests exist for the area you changed, run:
 
-- what you changed
-- why you changed it
-- how to test it
+```bash
+cargo test
+```
 
----
+Also run the app manually when changing terminal behavior, keyboard shortcuts, storage, or UI rendering.
 
-## Good first issues to pick up
+### 5. Open a pull request
 
-If you're new and want somewhere to start:
+In the PR description, explain:
 
-- improving compression logic in `core/compressor.py`
-- adding keyboard shortcuts to the Textual UI
-- writing tests for the SQLite storage layer
-- improving ANSI escape code handling in `core/shell.py`
-- improving the `lore search` output formatting
-- writing better error messages when the shell crashes
-
----
-
-## Code style
-
-- Python 3.11+
-- keep functions small and single-purpose
-- comment anything that isn't obvious
-- no external dependencies without a good reason — we keep the stack lean
+- what changed
+- why it changed
+- how you tested it
+- any known limitations
 
 ---
 
-## What we're not looking for (right now)
+## Good First Issues
 
-- cloud sync features
-- electron or web-based UI
-- anything that requires an account or internet connection
+If you are new to the project, these are useful places to start:
 
-Lore is local first. Keep it that way.
+- Implement `db/search.rs` with SQLite queries.
+- Wire the search overlay to real database results.
+- Replace the hardcoded status bar command count with real session data.
+- Add focused tests for `db/storage.rs`.
+- Update `db/schema.txt` so it matches the actual SQLite schema.
+- Improve README accuracy as features evolve.
+- Make the default shell configurable instead of hardcoded.
 
 ---
 
-## Questions?
+## Higher-Impact Areas
 
-Open an issue and tag it `question`. No question is too small.
+These are larger and may need discussion before implementation:
+
+- Cleanly capture output for each command.
+- Record real command exit codes.
+- Detect the current project from `.git`, `Cargo.toml`, `package.json`, and similar files.
+- Add a project-aware command timeline.
+- Detect when a later command likely fixed an earlier failure.
+- Add session recaps.
+- Add local Ollama-based explanations using stored command context.
+
+---
+
+## Code Style
+
+- Prefer clear, small functions.
+- Keep UI rendering code in `ui/`.
+- Keep database reads and writes in `db/`.
+- Keep shell, PTY, and output processing in `core/`.
+- Use `anyhow::Result` for app-level fallible operations.
+- Do not add new dependencies without a clear reason.
+- Add comments only where they explain non-obvious behavior.
+
+Run formatting before submitting:
+
+```bash
+cargo fmt
+```
+
+---
+
+## Product Principles
+
+Lore should be:
+
+- **Local first**: user data stays on the machine.
+- **Keyboard friendly**: common workflows should not require the mouse.
+- **Memory oriented**: features should help users remember, understand, or reuse terminal work.
+- **Terminal first**: the app should still feel like a real terminal.
+- **Quietly useful**: AI should explain real terminal context, not become generic chat.
+
+When unsure whether a feature belongs, ask:
+
+```text
+Does this help someone recover context, understand a failure, or reuse a fix?
+```
+
+If yes, it probably fits Lore.
+
+---
+
+## What We Are Not Looking For Right Now
+
+- cloud sync
+- telemetry
+- account systems
+- Electron or web-based rewrites
+- generic chatbot features
+- terminal-theme-only changes
+- large plugin systems before the core memory loop is solid
+
+---
+
+## Questions
+
+Open an issue and tag it `question`.
+
+No question is too small. Lore is early, and clear discussion is part of shaping the product.
 
 ---
 
