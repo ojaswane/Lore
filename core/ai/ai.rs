@@ -1,5 +1,6 @@
 // explain_error(command, output) -> explanation
 use anyhow::Result;
+use color_eyre::eyre::Error;
 
 // // pipeline
 // main.rs detects error (exit_code != 0)
@@ -29,4 +30,48 @@ pub struct AiString {
     pub fix: String,
     pub what_it_does: String,
 }
-pub fn explain_error() {}
+
+pub fn explain_error(command: &str, output: &str, exit_code: i32) -> Result<AiString> {
+    // prompt to send to ollama
+    let prompt = format!(
+        "You are Lore, a local terminal assistant.
+
+    Explain the terminal output below.
+    Be concise.
+    Do not invent facts.
+    If there is an error, explain:
+    1. what failed
+    2. why it likely failed
+    3. the next command to try
+
+    Command:
+    {command}
+
+    Output:
+    {output}"
+    );
+
+    // response
+    let response = reqwest::Client::new()
+        .post("http://localhost:11434/api/generate")
+        .json(&serde_json::json!({
+            "model": "lore",
+            "prompt": prompt,
+            "max_tokens": 200,
+            "temperature": 0.5,
+        }))
+        .send()
+        .await
+        .map_err(|e| Error::from(e))?;
+
+    let response_json = response
+        .json::<serde_json::Value>()
+        .await
+        .map_err(|e| Error::from(e))?;
+
+    Ok(AiString {
+        explanation: String::new(),
+        fix: String::new(),
+        what_it_does: String::new(),
+    })
+}
