@@ -62,12 +62,12 @@ pub async fn explain_error(command: &str, output: &str, exit_code: i32) -> Resul
         }))
         .send()
         .await
-        .map_err(|e| Error::from(e));
+        .map_err(|e| Error::from(e))?;
 
-    let response_json = response
+    let _response_json = response
         .json::<serde_json::Value>()
         .await
-        .map_err(|e| Error::from(e));
+        .map_err(|e| Error::from(e))?;
 
     Ok(AiString {
         explanation: String::new(),
