@@ -4,6 +4,7 @@ use anyhow::Result; // this is the error handling library we will be using
 use crossterm::event::{self, Event, KeyCode, KeyModifiers}; // this is the library we will be using to handle the events of the terminal
 use crossterm::{cursor, execute};
 use ratatui::DefaultTerminal;
+use reqwest::Request;
 use std::io::Write;
 use std::io::stdout;
 use std::sync::{Arc, Mutex};
@@ -134,6 +135,9 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                         }
                         KeyCode::Char('e') if is_app_shortcut(key.modifiers) => {
                             mode = AppMode::AiPanel;
+
+                            // tigger Ai request
+                            let Request = core::ai::ai::explain_error(command, output, exit_code)
                         }
                         KeyCode::Char(c) => {
                             if command_started_at.is_none() {
