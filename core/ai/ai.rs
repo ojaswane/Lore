@@ -31,7 +31,7 @@ pub struct AiString {
     pub what_it_does: String,
 }
 
-pub fn explain_error(command: &str, output: &str, exit_code: i32) -> Result<AiString> {
+pub async fn explain_error(command: &str, output: &str, exit_code: i32) -> Result<AiString> {
     // prompt to send to ollama
     let prompt = format!(
         "You are Lore, a local terminal assistant.
@@ -62,12 +62,12 @@ pub fn explain_error(command: &str, output: &str, exit_code: i32) -> Result<AiSt
         }))
         .send()
         .await
-        .map_err(|e| Error::from(e))?;
+        .map_err(|e| Error::from(e));
 
     let response_json = response
         .json::<serde_json::Value>()
         .await
-        .map_err(|e| Error::from(e))?;
+        .map_err(|e| Error::from(e));
 
     Ok(AiString {
         explanation: String::new(),
