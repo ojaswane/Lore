@@ -49,7 +49,7 @@ No cloud. No account. No remote sync. Just your lore, on your machine.
 - **Session storage** - creates sessions in SQLite with start/end timestamps.
 - **Command storage** - saves typed commands with working directory, output snapshot, exit code field, and duration.
 - **Search overlay UI** - `Ctrl+L` / `Cmd+L` opens the in-app search panel.
-- **AI panel UI** - `Ctrl+E` / `Cmd+E` opens the assistant panel shell, ready for Ollama integration.
+- **AI panel UI** - `F2` or `Ctrl+E` opens the assistant panel shell, ready for Ollama integration.
 
 Lore is still pre-alpha. Some pieces are intentionally rough while the core loop is being shaped.
 
@@ -150,7 +150,7 @@ Inside Lore:
 ```text
 Esc             exit Lore
 Ctrl+L / Cmd+L  open search
-Ctrl+E / Cmd+E  open AI panel
+F2 / Ctrl+E     open AI panel
 ```
 
 To check that the project compiles:

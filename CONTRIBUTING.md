@@ -74,7 +74,7 @@ Inside Lore:
 ```text
 Esc             exit Lore
 Ctrl+L / Cmd+L  open search
-Ctrl+E / Cmd+E  open AI panel
+F2 / Ctrl+E     open AI panel
 ```
 
 ---

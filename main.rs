@@ -35,6 +35,47 @@ fn is_app_shortcut(modifiers: KeyModifiers) -> bool {
     modifiers.contains(KeyModifiers::SUPER) || modifiers.contains(KeyModifiers::CONTROL)
 }
 
+fn open_ai_panel(
+    mode: &mut AppMode,
+    ai_state: &mut ui::ai_panel::AiState,
+    last_command: &str,
+    last_output: &str,
+    last_exit_code: i32,
+) {
+    *mode = AppMode::AiPanel;
+
+    if last_command.is_empty() {
+        ai_state.context = String::from("No command captured yet");
+        ai_state.explanation =
+            String::from("Run a command first, then open Lore AI to explain its output.");
+        ai_state.fix = String::from("Try running a command like `ls missing-file`, then press F2.");
+        ai_state.what_it_does =
+            String::from("Lore uses the last captured command and terminal output as context.");
+        return;
+    }
+
+    ai_state.context = format!("{} → exit {}", last_command, last_exit_code);
+    ai_state.explanation = String::from("Asking Ollama...");
+    ai_state.fix.clear();
+    ai_state.what_it_does.clear();
+
+    let response = core::ai::ai::explain_error(last_command, last_output, last_exit_code);
+
+    match response {
+        Ok(response) => {
+            ai_state.explanation = response.explanation;
+            ai_state.fix = response.fix;
+            ai_state.what_it_does = response.what_it_does;
+        }
+        Err(error) => {
+            ai_state.explanation = format!("Could not reach Ollama: {error}");
+            ai_state.fix = String::from("Make sure Ollama is running and the `lore` model exists.");
+            ai_state.what_it_does =
+                String::from("Lore sends the last command output to Ollama on localhost.");
+        }
+    }
+}
+
 fn main() -> Result<()> {
     //cursor rendering from crossterm backend
     execute!(stdout(), cursor::SetCursorStyle::BlinkingBar)?;
@@ -136,34 +177,22 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                             mode = AppMode::Search;
                         }
                         KeyCode::Char('e') if is_app_shortcut(key.modifiers) => {
-                            mode = AppMode::AiPanel;
-
-                            // tigger Ai request
-                            let response = core::ai::ai::explain_error(
+                            open_ai_panel(
+                                &mut mode,
+                                &mut ai_state,
                                 &last_command,
                                 &last_output,
                                 last_exit_code,
                             );
-
-                            ai_state.context =
-                                format!("{} → exit {}", last_command, last_exit_code);
-                            match response {
-                                Ok(response) => {
-                                    ai_state.explanation = response.explanation;
-                                    ai_state.fix = response.fix;
-                                    ai_state.what_it_does = response.what_it_does;
-                                }
-                                Err(error) => {
-                                    ai_state.explanation =
-                                        format!("Could not reach Ollama: {error}");
-                                    ai_state.fix = String::from(
-                                        "Make sure Ollama is running and the `lore` model exists.",
-                                    );
-                                    ai_state.what_it_does = String::from(
-                                        "Lore sends the last command output to Ollama on localhost.",
-                                    );
-                                }
-                            }
+                        }
+                        KeyCode::F(2) => {
+                            open_ai_panel(
+                                &mut mode,
+                                &mut ai_state,
+                                &last_command,
+                                &last_output,
+                                last_exit_code,
+                            );
                         }
                         KeyCode::Char(c) => {
                             if command_started_at.is_none() {
