@@ -79,7 +79,7 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
         selected: 0,
         filter: ui::search::Filter::All,
     };
-    let ai_state = ui::ai_panel::AiState {
+    let mut ai_state = ui::ai_panel::AiState {
         context: String::new(),
         explanation: String::new(),
         fix: String::new(),
@@ -89,6 +89,9 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
     // Helpers to add save the commands
     let mut current_command = String::new();
     let mut command_started_at: Option<std::time::Instant> = None;
+    let mut last_command = String::new();
+    let mut last_output = String::new();
+    let mut last_exit_code = 0;
 
     loop {
         let (current_text, cursor_pos) = {
