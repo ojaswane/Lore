@@ -4,7 +4,6 @@ use anyhow::Result; // this is the error handling library we will be using
 use crossterm::event::{self, Event, KeyCode, KeyModifiers}; // this is the library we will be using to handle the events of the terminal
 use crossterm::{cursor, execute};
 use ratatui::DefaultTerminal;
-use reqwest::Request;
 use std::io::Write;
 use std::io::stdout;
 use std::sync::{Arc, Mutex};
@@ -144,14 +143,27 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                                 &last_command,
                                 &last_output,
                                 last_exit_code,
-                            )
-                            .await;
+                            );
 
                             ai_state.context =
                                 format!("{} → exit {}", last_command, last_exit_code);
-                            ai_state.explanation = response.explanation;
-                            ai_state.fix = response.fix;
-                            ai_state.what_it_does = response.what_it_does;
+                            match response {
+                                Ok(response) => {
+                                    ai_state.explanation = response.explanation;
+                                    ai_state.fix = response.fix;
+                                    ai_state.what_it_does = response.what_it_does;
+                                }
+                                Err(error) => {
+                                    ai_state.explanation =
+                                        format!("Could not reach Ollama: {error}");
+                                    ai_state.fix = String::from(
+                                        "Make sure Ollama is running and the `lore` model exists.",
+                                    );
+                                    ai_state.what_it_does = String::from(
+                                        "Lore sends the last command output to Ollama on localhost.",
+                                    );
+                                }
+                            }
                         }
                         KeyCode::Char(c) => {
                             if command_started_at.is_none() {
@@ -169,6 +181,10 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                             let command = std::mem::take(&mut current_command);
 
                             if !command.is_empty() {
+                                last_command = command.clone();
+                                last_output = current_text.clone();
+                                last_exit_code = 0;
+
                                 let duration_ms = command_started_at
                                     .map(|t| t.elapsed().as_millis() as i64)
                                     .unwrap_or(0);

@@ -1,6 +1,6 @@
 // explain_error(command, output) -> explanation
 use anyhow::Result;
-use color_eyre::eyre::Error;
+use serde::Deserialize;
 
 // // pipeline
 // main.rs detects error (exit_code != 0)
@@ -31,7 +31,12 @@ pub struct AiString {
     pub what_it_does: String,
 }
 
-pub async fn explain_error(command: &str, output: &str, exit_code: i32) -> Result<AiString> {
+#[derive(Deserialize)]
+struct OllamaResponse {
+    response: String,
+}
+
+pub fn explain_error(command: &str, output: &str, exit_code: i32) -> Result<AiString> {
     // prompt to send to ollama
     let prompt = format!(
         "You are Lore, a local terminal assistant.
@@ -48,30 +53,33 @@ pub async fn explain_error(command: &str, output: &str, exit_code: i32) -> Resul
     {command}
 
     Output:
-    {output}"
+    {output}
+
+    Exit code:
+    {exit_code}"
     );
 
     // response
-    let response = reqwest::Client::new()
+    let response_json = reqwest::blocking::Client::new()
         .post("http://localhost:11434/api/generate")
         .json(&serde_json::json!({
             "model": "lore",
             "prompt": prompt,
-            "max_tokens": 200,
-            "temperature": 0.5,
+            "stream": false,
+            "options": {
+                "temperature": 0.5,
+                "num_predict": 200
+            }
         }))
         .send()
-        .await
-        .map_err(|e| Error::from(e))?;
-
-    let _response_json = response
-        .json::<serde_json::Value>()
-        .await
-        .map_err(|e| Error::from(e))?;
+        .and_then(|response| response.error_for_status())?
+        .json::<OllamaResponse>()?;
 
     Ok(AiString {
-        explanation: String::new(),
-        fix: String::new(),
-        what_it_does: String::new(),
+        explanation: response_json.response,
+        fix: String::from("Review the explanation above and run the safest next command manually."),
+        what_it_does: String::from(
+            "Asks your local Ollama model to explain the last terminal output.",
+        ),
     })
 }
