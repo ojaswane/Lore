@@ -137,7 +137,18 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                             mode = AppMode::AiPanel;
 
                             // tigger Ai request
-                            let Request = core::ai::ai::explain_error(command, output, exit_code)
+                            let response = core::ai::ai::explain_error(
+                                &last_command,
+                                &last_output,
+                                last_exit_code,
+                            )
+                            .await;
+
+                            ai_state.context =
+                                format!("{} → exit {}", last_command, last_exit_code);
+                            ai_state.explanation = response.explanation;
+                            ai_state.fix = response.fix;
+                            ai_state.what_it_does = response.what_it_does;
                         }
                         KeyCode::Char(c) => {
                             if command_started_at.is_none() {
