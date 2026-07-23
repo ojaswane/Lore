@@ -12,6 +12,7 @@ pub struct AiState {
     pub explanation: String,
     pub fix: String,
     pub what_it_does: String,
+    pub input: String,
 }
 
 pub fn ui(frame: &mut Frame, text: &str, cursor_pos: (u16, u16), ai_state: &AiState) {
@@ -140,11 +141,23 @@ fn render_ai_panel(frame: &mut Frame, area: Rect, state: &AiState) {
     );
 
     // ask input
+    let input_text = if state.input.is_empty() {
+        " ask anything about this...".to_string()
+    } else {
+        format!(" {}", state.input)
+    };
+
+    let input_style = if state.input.is_empty() {
+        Style::default().fg(Color::Rgb(60, 60, 80))
+    } else {
+        Style::default().fg(Color::Rgb(220, 220, 235))
+    };
+
     frame.render_widget(
-        Paragraph::new(Line::from(vec![Span::styled(
-            " ask anything about this...",
-            Style::default().fg(Color::Rgb(60, 60, 80)),
-        )]))
+        Paragraph::new(Line::from(vec![
+            Span::styled(input_text, input_style),
+            Span::styled("█", Style::default().fg(Color::Rgb(124, 58, 237))),
+        ]))
         .block(
             Block::default()
                 .borders(Borders::TOP)

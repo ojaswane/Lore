@@ -51,6 +51,7 @@ fn open_ai_panel(
         ai_state.fix = String::from("Try running a command like `ls missing-file`, then press F2.");
         ai_state.what_it_does =
             String::from("Lore uses the last captured command and terminal output as context.");
+        ai_state.input.clear();
         return;
     }
 
@@ -58,6 +59,7 @@ fn open_ai_panel(
     ai_state.explanation = String::from("Asking Ollama...");
     ai_state.fix.clear();
     ai_state.what_it_does.clear();
+    ai_state.input.clear();
 
     let response = core::ai::ai::explain_error(last_command, last_output, last_exit_code);
 
@@ -124,6 +126,7 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
         explanation: String::new(),
         fix: String::new(),
         what_it_does: String::new(),
+        input: String::new(),
     };
 
     // Helpers to add save the commands
@@ -293,6 +296,50 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                     AppMode::AiPanel => match key.code {
                         KeyCode::Esc => {
                             mode = AppMode::Terminal;
+                        }
+                        KeyCode::Enter => {
+                            let question = ai_state.input.trim().to_string();
+
+                            if !question.is_empty() {
+                                ai_state.context =
+                                    format!("{} → exit {}", last_command, last_exit_code);
+                                ai_state.explanation = String::from("Asking Ollama...");
+                                ai_state.fix.clear();
+                                ai_state.what_it_does.clear();
+
+                                let response = core::ai::ai::ask_question(
+                                    &question,
+                                    &last_command,
+                                    &last_output,
+                                    last_exit_code,
+                                );
+
+                                match response {
+                                    Ok(response) => {
+                                        ai_state.explanation = response.explanation;
+                                        ai_state.fix = response.fix;
+                                        ai_state.what_it_does = response.what_it_does;
+                                    }
+                                    Err(error) => {
+                                        ai_state.explanation =
+                                            format!("Could not reach Ollama: {error}");
+                                        ai_state.fix = String::from(
+                                            "Make sure Ollama is running and the `lore` model exists.",
+                                        );
+                                        ai_state.what_it_does = String::from(
+                                            "Lore sends your sidebar question to Ollama on localhost.",
+                                        );
+                                    }
+                                }
+
+                                ai_state.input.clear();
+                            }
+                        }
+                        KeyCode::Backspace => {
+                            ai_state.input.pop();
+                        }
+                        KeyCode::Char(c) => {
+                            ai_state.input.push(c);
                         }
                         _ => {}
                     },
