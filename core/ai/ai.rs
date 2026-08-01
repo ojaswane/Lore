@@ -129,6 +129,8 @@ pub fn ask_question(
     Ok(AiString {
         explanation: response_json.response,
         fix: String::from("Use the answer above as guidance before running anything."),
-        what_it_does: String::from("Answers your sidebar question with the last terminal output as context."),
+        what_it_does: String::from(
+            "Answers your sidebar question with the last terminal output as context.",
+        ),
     })
 }
