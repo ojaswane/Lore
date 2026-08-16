@@ -78,6 +78,28 @@ fn open_ai_panel(
     }
 }
 
+fn refresh_search_results(
+    conn: &rusqlite::Connection,
+    search_state: &mut ui::search::SearchState,
+) -> rusqlite::Result<()> {
+    let project_dir = std::env::current_dir()
+        .map(|path| path.display().to_string())
+        .unwrap_or_else(|_| String::from("."));
+
+    search_state.results = db::search::search_commands(
+        conn,
+        &search_state.query,
+        &search_state.filter,
+        &project_dir,
+    )?;
+
+    if search_state.selected >= search_state.results.len() {
+        search_state.selected = search_state.results.len().saturating_sub(1);
+    }
+
+    Ok(())
+}
+
 fn main() -> Result<()> {
     //cursor rendering from crossterm backend
     execute!(stdout(), cursor::SetCursorStyle::BlinkingBar)?;
@@ -178,6 +200,7 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                     AppMode::Terminal => match key.code {
                         KeyCode::Char('l') if is_app_shortcut(key.modifiers) => {
                             mode = AppMode::Search;
+                            refresh_search_results(conn, &mut search_state)?;
                         }
                         KeyCode::Char('e') if is_app_shortcut(key.modifiers) => {
                             open_ai_panel(
@@ -284,12 +307,18 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                         }
                         KeyCode::Char(c) => {
                             search_state.query.push(c);
+                            search_state.selected = 0;
+                            refresh_search_results(conn, &mut search_state)?;
                         }
                         KeyCode::Backspace => {
                             search_state.query.pop();
+                            search_state.selected = 0;
+                            refresh_search_results(conn, &mut search_state)?;
                         }
                         KeyCode::Tab => {
                             search_state.filter = search_state.filter.next();
+                            search_state.selected = 0;
+                            refresh_search_results(conn, &mut search_state)?;
                         }
                         _ => {}
                     },
