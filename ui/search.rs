@@ -211,19 +211,19 @@ fn render_search_footer(frame: &mut Frame, area: Rect, result: usize) {
         ),
         Span::styled(" navigate  ", Style::default().fg(Color::Rgb(60, 60, 80))),
         Span::styled(
-            " ↵ ",
-            Style::default()
-                .fg(Color::Rgb(80, 80, 100))
-                .bg(Color::Rgb(25, 25, 35)),
-        ),
-        Span::styled(" run again  ", Style::default().fg(Color::Rgb(60, 60, 80))),
-        Span::styled(
             " tab ",
             Style::default()
                 .fg(Color::Rgb(80, 80, 100))
                 .bg(Color::Rgb(25, 25, 35)),
         ),
-        Span::styled(" copy", Style::default().fg(Color::Rgb(60, 60, 80))),
+        Span::styled(" filter  ", Style::default().fg(Color::Rgb(60, 60, 80))),
+        Span::styled(
+            " esc ",
+            Style::default()
+                .fg(Color::Rgb(80, 80, 100))
+                .bg(Color::Rgb(25, 25, 35)),
+        ),
+        Span::styled(" close", Style::default().fg(Color::Rgb(60, 60, 80))),
         Span::raw("                              "),
         Span::styled(
             format!("{} results", result),

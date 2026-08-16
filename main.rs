@@ -31,8 +31,22 @@ enum AppMode {
     AiPanel,
 }
 
+fn is_search_shortcut(code: KeyCode, modifiers: KeyModifiers) -> bool {
+    matches!(code, KeyCode::Char('l') | KeyCode::Char('L'))
+        && (modifiers.contains(KeyModifiers::CONTROL) || modifiers.contains(KeyModifiers::SUPER))
+}
+
 fn is_app_shortcut(modifiers: KeyModifiers) -> bool {
     modifiers.contains(KeyModifiers::SUPER) || modifiers.contains(KeyModifiers::CONTROL)
+}
+
+fn open_search(
+    mode: &mut AppMode,
+    conn: &rusqlite::Connection,
+    search_state: &mut ui::search::SearchState,
+) -> rusqlite::Result<()> {
+    *mode = AppMode::Search;
+    refresh_search_results(conn, search_state)
 }
 
 fn open_ai_panel(
@@ -198,9 +212,11 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
 
                 match mode {
                     AppMode::Terminal => match key.code {
-                        KeyCode::Char('l') if is_app_shortcut(key.modifiers) => {
-                            mode = AppMode::Search;
-                            refresh_search_results(conn, &mut search_state)?;
+                        code if is_search_shortcut(code, key.modifiers) => {
+                            open_search(&mut mode, conn, &mut search_state)?;
+                        }
+                        KeyCode::F(1) => {
+                            open_search(&mut mode, conn, &mut search_state)?;
                         }
                         KeyCode::Char('e') if is_app_shortcut(key.modifiers) => {
                             open_ai_panel(
