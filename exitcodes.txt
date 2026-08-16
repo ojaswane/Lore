@@ -1,0 +1,11 @@
+0 => success 
+1 => Generic error => Catchall for general failures (e.g., divide by zero, permission denied).
+2 => Misuse of Shell Builtins => Missing arguments, syntax errors, or incorrect options.
+126 => Command Cannot Execute => The system found the file, but it lacks execution permissions.
+127 => Command Not Found => Typo in the command, or it is missing from your system $PATH.
+128 => Invalid Exit Argument => The script used an out-of-range argument inside an exit command.
+128 + N => Fatal Signal N => The process was forcefully killed by a system signal.
+130 => Terminated by User => The process was stopped manually using Ctrl+C / Cmd+C (Signal 2).
+137 => Terminated by SIGKILL => The process was abruptly killed, often by the OS due to running out of memory (Signal 9).
+255 => Exit Status Out of Range => The application returned an integer outside the valid 0–255 bounds.
+
