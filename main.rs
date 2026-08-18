@@ -263,13 +263,18 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                                     .map(|path| path.display().to_string())
                                     .unwrap_or_else(|_| String::from("."));
 
+                                // this is to save the command into the sql db
+
+                                let exit_code =
+                                    core::exitcode::get_exit_code(&current_text).unwrap_or(-1);
+                                // this is to call the exit code
                                 db::storage::save_command(
                                     conn,
                                     session_id,
                                     &command,
                                     &dir,
                                     &current_text,
-                                    0,
+                                    exit_code,
                                     duration_ms,
                                 )?;
                             }
