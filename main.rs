@@ -6,6 +6,7 @@ use crossterm::{cursor, execute};
 use ratatui::DefaultTerminal;
 use std::io::Write;
 use std::io::stdout;
+use std::sync::mpsc;
 use std::sync::{Arc, Mutex};
 
 mod core;
@@ -29,6 +30,12 @@ enum AppMode {
     Terminal,
     Search,
     AiPanel,
+}
+
+struct PendingCommand {
+    command: String,
+    dir: String,
+    started_at: std::time::Instant,
 }
 
 fn is_search_shortcut(code: KeyCode, modifiers: KeyModifiers) -> bool {
@@ -143,7 +150,11 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
     let parser = Arc::new(Mutex::new(vt100::Parser::new(24, 80, 0)));
 
     let (reader, mut writer) = system_io(master.as_ref())?;
-    let _handle = output_shell(reader, parser.clone());
+    let (exit_code_sender, exit_code_receiver) = mpsc::channel();
+    let _handle = output_shell(reader, parser.clone(), exit_code_sender);
+
+    writer.write_all(b"export PROMPT_COMMAND='printf \"\\033]777;LoreExit:%s\\a\" \"$?\"'\r")?;
+    writer.flush()?;
 
     //checking if the user idle or typing for cursor animation
     let mut last_key_node = std::time::Instant::now();
@@ -168,6 +179,7 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
     // Helpers to add save the commands
     let mut current_command = String::new();
     let mut command_started_at: Option<std::time::Instant> = None;
+    let mut pending_command: Option<PendingCommand> = None;
     let mut last_command = String::new();
     let mut last_output = String::new();
     let mut last_exit_code = 0;
@@ -180,6 +192,27 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
             let (crow, ccol) = screen.cursor_position();
             (text, (crow, ccol))
         };
+
+        while let Ok(exit_code) = exit_code_receiver.try_recv() {
+            if let Some(pending) = pending_command.take() {
+                let output = current_text.clone();
+                let duration_ms = pending.started_at.elapsed().as_millis() as i64;
+
+                db::storage::save_command(
+                    conn,
+                    session_id,
+                    &pending.command,
+                    &pending.dir,
+                    &output,
+                    exit_code,
+                    duration_ms,
+                )?;
+
+                last_command = pending.command;
+                last_output = output;
+                last_exit_code = exit_code;
+            }
+        }
 
         terminal.draw(|frame| match mode {
             AppMode::Terminal => {
@@ -252,31 +285,16 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                             let command = std::mem::take(&mut current_command);
 
                             if !command.is_empty() {
-                                last_command = command.clone();
-                                last_output = current_text.clone();
-                                last_exit_code = 0;
-
-                                let duration_ms = command_started_at
-                                    .map(|t| t.elapsed().as_millis() as i64)
-                                    .unwrap_or(0);
                                 let dir = std::env::current_dir()
                                     .map(|path| path.display().to_string())
                                     .unwrap_or_else(|_| String::from("."));
 
-                                // this is to save the command into the sql db
-
-                                let exit_code =
-                                    core::exitcode::get_exit_code(&current_text).unwrap_or(-1);
-                                // this is to call the exit code
-                                db::storage::save_command(
-                                    conn,
-                                    session_id,
-                                    &command,
-                                    &dir,
-                                    &current_text,
-                                    exit_code,
-                                    duration_ms,
-                                )?;
+                                pending_command = Some(PendingCommand {
+                                    command,
+                                    dir,
+                                    started_at: command_started_at
+                                        .unwrap_or_else(std::time::Instant::now),
+                                });
                             }
 
                             command_started_at = None;
