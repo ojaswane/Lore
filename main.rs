@@ -184,6 +184,11 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
     let mut last_output = String::new();
     let mut last_exit_code = 0;
 
+    // Ingesr worker thread
+
+    // this is basically to convert multiple threads into a single thread to write to the db
+    let (ingest_tx, ingest_rx) = mpsc::channel();
+
     loop {
         let (current_text, cursor_pos) = {
             let parser_lock = parser.lock().unwrap();
@@ -207,16 +212,6 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                     exit_code,
                     duration_ms,
                 })?;
-
-                // db::storage::save_command(
-                //     conn,
-                //     session_id,
-                //     &pending.command,
-                //     &pending.dir,
-                //     &output,
-                //     exit_code,
-                //     duration_ms,
-                // )?;
 
                 last_command = pending.command;
                 last_output = output;
