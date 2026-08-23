@@ -46,7 +46,7 @@ pub fn session_init(conn: &Connection, project: &str) -> Result<i64> {
     Ok(conn.last_insert_rowid()) // returns the session_id
 }
 
-// save the commands
+// save the commands into db
 pub fn save_command(
     conn: &Connection,
     session_id: i64,
