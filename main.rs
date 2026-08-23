@@ -198,7 +198,7 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                 let output = current_text.clone();
                 let duration_ms = pending.started_at.elapsed().as_millis() as i64;
 
-                ingest_tx.send(db::ingest::IngestEvent::CommandFinished {
+                ingest_tx.send(core::ingest::IngestEvent::CommandFinished {
                     session_id,
                     command: pending.command.clone(),
                     dir: pending.dir.clone(),
