@@ -57,11 +57,51 @@ Lore is still pre-alpha. Some pieces are intentionally rough while the core loop
 
 ## In Progress
 
-- Wiring the search overlay to real SQLite queries.
+- Building the ingest pipeline boundary for command history.
+- Moving command persistence out of the main UI loop.
 - Capturing cleaner command output after a command finishes.
-- Recording real exit codes instead of placeholder values.
 - Adding local AI explanations through Ollama.
+- Preparing the project for local semantic search over command output.
 - Adding focused tests for storage and search.
+
+---
+
+## AI Search / Ingest Pipeline
+
+Lore's next major feature is a local AI search pipeline. The goal is to keep the terminal responsive while command history is captured, processed, and stored in the background.
+
+The intended ingest flow:
+
+```text
+command finishes
+       |
+       v
+main thread builds IngestEvent
+       |
+       v
+single ingest worker receives event
+       |
+       v
+worker saves command data to SQLite
+       |
+       v
+future phases: chunk output -> embed chunks -> semantic search
+```
+
+Phase 1 focuses only on the ingest boundary:
+
+- [x] Define an `IngestEvent` type for completed commands.
+- [x] Include command, directory, output, exit code, duration, timestamp, and session id.
+- [x] Wire the ingest module into the project.
+- [ ] Create the ingest channel in `main.rs`.
+- [ ] Start exactly one ingest worker.
+- [ ] Send completed command events from `main.rs` into the worker.
+- [ ] Make the worker call `db::storage::save_command`.
+- [ ] Remove old direct-save code from the main loop.
+- [ ] Keep embedding dependencies out until the ingest worker is stable.
+- [ ] Confirm `cargo check` passes.
+
+Later phases will add output chunking, a `chunks` table, local embeddings, and semantic search ranking.
 
 ---
 
@@ -108,6 +148,8 @@ Lore/
 ├── db/
 │   ├── storage.rs          # SQLite session and command writes
 │   ├── search.rs           # search/query layer
+│   ├── ingest.rs           # ingest event types and worker pipeline
+│   ├── embedding.rs        # future embedding module
 │   └── schema.txt          # database schema notes
 │
 ├── ui/
@@ -185,8 +227,10 @@ v0.1  working terminal UI with portable-pty + Ratatui
 v0.2  SQLite session and command storage
 v0.3  search overlay backed by real database queries
 v0.4  cleaner output capture and real exit codes
-v0.5  local AI explanations through Ollama
-v0.6  command suggestions and safe agent actions
+v0.5  background ingest pipeline
+v0.6  output chunking and chunk storage
+v0.7  local AI explanations through Ollama
+v0.8  local semantic search over command output
 v1.0  stable local-first terminal memory
 ```
 
@@ -202,6 +246,7 @@ Good first areas:
 - Add SQLite tests for `db/storage.rs`.
 - Improve command/output capture.
 - Record real shell exit codes.
+- Build the ingest worker that stores completed command events in the background.
 - Add the Ollama client for the AI panel.
 - Improve terminal rendering and ANSI handling.
 
