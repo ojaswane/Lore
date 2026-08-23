@@ -198,15 +198,25 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
                 let output = current_text.clone();
                 let duration_ms = pending.started_at.elapsed().as_millis() as i64;
 
-                db::storage::save_command(
-                    conn,
+                ingest_tx.send(db::ingest::IngestEvent::CommandFinished {
                     session_id,
-                    &pending.command,
-                    &pending.dir,
-                    &output,
+                    command: pending.command.clone(),
+                    dir: pending.dir.clone(),
+                    timestamp: chrono::Utc::now().timestamp(),
+                    output: output.clone(),
                     exit_code,
                     duration_ms,
-                )?;
+                })?;
+
+                // db::storage::save_command(
+                //     conn,
+                //     session_id,
+                //     &pending.command,
+                //     &pending.dir,
+                //     &output,
+                //     exit_code,
+                //     duration_ms,
+                // )?;
 
                 last_command = pending.command;
                 last_output = output;

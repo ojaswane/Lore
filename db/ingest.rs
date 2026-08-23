@@ -12,6 +12,7 @@
 //-> receives events
 //-> writes to SQLite
 
+use anyhow::Result;
 pub enum IngestEvent {
     CommandFinished {
         session_id: i64,
