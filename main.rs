@@ -187,7 +187,7 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
     // Ingesr worker thread
 
     // this is basically to convert multiple threads into a single thread to write to the db
-    let (ingest_tx, ingest_rx) = mpsc::channel();
+    let (ingest_tx, ingest_rx) = mpsc::channel(); // mpsc: multiple producer, single consumer
 
     loop {
         let (current_text, cursor_pos) = {
