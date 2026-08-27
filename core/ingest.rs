@@ -26,4 +26,39 @@ pub enum IngestEvent {
     Shutdown,
 }
 
-pub fn ingest_worker() {}
+pub fn ingest_worker(rx: std::sync::mpsc::Receiver<IngestEvent>) {
+    // adding a connection with the db
+    let conn = create::db::storage::init_db().expect("Failed to initialize database");
+
+    // process events in a loop
+    while let Ok(event) = rx.recv() {
+        match event {
+            IngestEvent::CommandFinished {
+                session_id,
+                command,
+                dir,
+                timestamp,
+                output,
+                exit_code,
+                duration_ms,
+            } => {
+                // Insert the command into the database
+                if let Err(e) = create::db::storage::insert_command(
+                    &conn,
+                    session_id,
+                    &command,
+                    &dir,
+                    timestamp,
+                    &output,
+                    exit_code,
+                    duration_ms,
+                ) {
+                    eprintln!("Failed to insert command into database: {:?}", e);
+                }
+            }
+            IngestEvent::Shutdown => {
+                break; // Exit the loop and terminate the thread
+            }
+        }
+    }
+}

@@ -188,6 +188,7 @@ fn app(mut terminal: DefaultTerminal, conn: &rusqlite::Connection, session_id: i
 
     // this is basically to convert multiple threads into a single thread to write to the db
     let (ingest_tx, ingest_rx) = mpsc::channel(); // mpsc: multiple producer, single consumer
+    let _ingest_handle = std::thread::spawn(move || core::ingest::ingest_worker(ingest_rx));
 
     loop {
         let (current_text, cursor_pos) = {
