@@ -39,6 +39,7 @@ pub fn init_db() -> Result<Connection> {
             output      TEXT,
             embedding   BLOB,
             FOREIGN KEY (command_id) REFERENCES commands(id)
+        );
 
         CREATE INDEX IF NOT EXISTS idx_chunks_timestamp ON chunks(timestamp);
     ",
@@ -73,7 +74,7 @@ pub fn save_command(
     let error = if exit_code != 0 { 1 } else { 0 };
 
     conn.execute(
-        "INSERT INTO commands 
+        "INSERT INTO commands
             (session_id, timestamp, command, dir, output, error, exit_code, duration_ms)
          VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
         params![
@@ -99,6 +100,26 @@ pub fn end_session(conn: &Connection, session_id: i64) -> Result<()> {
          total_commands = (SELECT COUNT(*) FROM commands WHERE session_id = ?2)
          WHERE id = ?2",
         params![now, session_id],
+    )?;
+
+    Ok(())
+}
+
+pub fn save_chunk(
+    conn: &Connection,
+    command_id: i64,
+    command: &str,
+    cwd: &str,
+    exit_code: i32,
+    output: &str,
+) -> Result<()> {
+    let now = chrono::Utc::now().timestamp();
+
+    conn.execute(
+        "INSERT INTO chunks 
+            (command_id, command, cwd, exit_code, timestamp, output)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+        params![command_id, command, cwd, exit_code, now, output],
     )?;
 
     Ok(())
