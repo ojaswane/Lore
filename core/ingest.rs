@@ -12,7 +12,6 @@
 //-> receives events
 //-> writes to SQLite
 
-use anyhow::Result;
 pub enum IngestEvent {
     CommandFinished {
         session_id: i64,
@@ -28,7 +27,7 @@ pub enum IngestEvent {
 
 pub fn ingest_worker(rx: std::sync::mpsc::Receiver<IngestEvent>) {
     // adding a connection with the db
-    let conn = create::db::storage::init_db().expect("Failed to initialize database");
+    let conn = crate::db::storage::init_db().expect("Failed to initialize database");
 
     // process events in a loop
     while let Ok(event) = rx.recv() {
@@ -37,18 +36,17 @@ pub fn ingest_worker(rx: std::sync::mpsc::Receiver<IngestEvent>) {
                 session_id,
                 command,
                 dir,
-                timestamp,
+                timestamp: _timestamp,
                 output,
                 exit_code,
                 duration_ms,
             } => {
                 // Insert the command into the database
-                if let Err(e) = create::db::storage::insert_command(
+                if let Err(e) = crate::db::storage::save_command(
                     &conn,
                     session_id,
                     &command,
                     &dir,
-                    timestamp,
                     &output,
                     exit_code,
                     duration_ms,
