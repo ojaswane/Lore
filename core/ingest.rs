@@ -25,6 +25,10 @@ pub enum IngestEvent {
     Shutdown,
 }
 
+// Ingest runs in a background worker thread, so database writes do not block
+// the main UI thread. The main thread sends completed command events through
+// a channel, and the ingest worker receives them and writes them to SQLite.
+
 pub fn ingest_worker(rx: std::sync::mpsc::Receiver<IngestEvent>) {
     // adding a connection with the db
     let conn = crate::db::storage::init_db().expect("Failed to initialize database");

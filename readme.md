@@ -93,13 +93,15 @@ Phase 1 focuses only on the ingest boundary:
 - [x] Define an `IngestEvent` type for completed commands.
 - [x] Include command, directory, output, exit code, duration, timestamp, and session id.
 - [x] Wire the ingest module into the project.
-- [ ] Create the ingest channel in `main.rs`.
-- [ ] Start exactly one ingest worker.
-- [ ] Send completed command events from `main.rs` into the worker.
-- [ ] Make the worker call `db::storage::save_command`.
-- [ ] Remove old direct-save code from the main loop.
-- [ ] Keep embedding dependencies out until the ingest worker is stable.
-- [ ] Confirm `cargo check` passes.
+- [x] Create the ingest channel in `main.rs`.
+- [x] Start exactly one ingest worker.
+- [x] Send completed command events from `main.rs` into the worker.
+- [x] Make the worker call `db::storage::save_command`.
+- [x] Remove old direct-save code from the main loop.
+- [x] Keep embedding dependencies out until the ingest worker is stable.
+- [x] Confirm `cargo check` passes.
+
+Phase 1 is complete: command persistence now flows through one background ingest worker instead of writing directly from the main UI loop.
 
 Later phases will add output chunking, a `chunks` table, local embeddings, and semantic search ranking.
 
