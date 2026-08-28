@@ -28,6 +28,17 @@ pub fn init_db() -> Result<Connection> {
             duration_ms INTEGER,
             FOREIGN KEY (session_id) REFERENCES sessions(id)
         );
+
+        CREATE TABLE IF NOT EXISTS chunks (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            command_id  INTEGER NOT NULL,
+            command     TEXT NOT NULL,
+            cwd         TEXT,
+            exit_code   INTEGER DEFAULT 0,
+            timestamp   INTEGER NOT NULL,
+            output      TEXT,
+            embedding   BLOB,
+            FOREIGN KEY (command_id) REFERENCES commands(id)
     ",
     )?;
 
