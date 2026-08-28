@@ -69,7 +69,7 @@ pub fn save_command(
     output: &str,
     exit_code: i32,
     duration_ms: i64,
-) -> Result<()> {
+) -> Result<i64> {
     let now = chrono::Utc::now().timestamp();
     let error = if exit_code != 0 { 1 } else { 0 };
 
@@ -89,7 +89,7 @@ pub fn save_command(
         ],
     )?;
 
-    Ok(())
+    Ok(conn.last_insert_rowid())
 }
 // end the session
 pub fn end_session(conn: &Connection, session_id: i64) -> Result<()> {

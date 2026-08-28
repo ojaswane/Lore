@@ -57,7 +57,7 @@ pub fn ingest_worker(rx: std::sync::mpsc::Receiver<IngestEvent>) {
                 // let _ = crate::core::chunk::store_chunks(&chunks);
 
                 // Insert the command into the database
-                if let Err(e) = crate::db::storage::save_command(
+                match crate::db::storage::save_command(
                     &conn,
                     session_id,
                     &command,
@@ -66,7 +66,18 @@ pub fn ingest_worker(rx: std::sync::mpsc::Receiver<IngestEvent>) {
                     exit_code,
                     duration_ms,
                 ) {
-                    eprintln!("Failed to insert command into database: {:?}", e);
+                    Ok(command_id) => {
+                        for chunk in chunks {
+                            if let Err(e) = crate::db::storage::save_chunk(
+                                &conn, command_id, &command, &dir, exit_code, &chunk,
+                            ) {
+                                eprintln!("Failed to insert chunk into database: {:?}", e);
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        eprintln!("Failed to insert command into database: {:?}", e);
+                    }
                 }
             }
             IngestEvent::Shutdown => {
