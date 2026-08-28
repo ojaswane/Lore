@@ -9,3 +9,5 @@ pub fn chunk_output(output: &str) -> Vec<String> {
         .filter(|chunk| !chunk.trim().is_empty())
         .collect()
 }
+
+pub fn store_chunks(chunks: Vec<String>) {}
