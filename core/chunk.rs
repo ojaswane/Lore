@@ -10,4 +10,6 @@ pub fn chunk_output(output: &str) -> Vec<String> {
         .collect()
 }
 
-pub fn store_chunks(chunks: Vec<String>) {}
+pub fn store_chunks(chunks: Vec<String>) {
+    // Tokanize the chunks
+}

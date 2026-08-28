@@ -103,7 +103,21 @@ Phase 1 focuses only on the ingest boundary:
 
 Phase 1 is complete: command persistence now flows through one background ingest worker instead of writing directly from the main UI loop.
 
-Later phases will add output chunking, a `chunks` table, local embeddings, and semantic search ranking.
+Phase 2 focuses on chunking command output so future embeddings can search smaller, meaningful pieces instead of giant terminal logs:
+
+- [x] Create `core/chunk.rs`.
+- [x] Add `chunk_output(output: &str) -> Vec<String>`.
+- [x] Wire the chunk module into `core/mod.rs`.
+- [x] Call `chunk_output` from the ingest worker.
+- [ ] Replace full chunk debug output with a chunk-count log.
+- [ ] Remove or implement the placeholder `store_chunks` function.
+- [ ] Add a `chunks` table in SQLite.
+- [ ] Add an index on chunk timestamps.
+- [ ] Add a storage function for saving chunks.
+- [ ] Make the ingest worker save chunks after saving the full command.
+- [ ] Confirm `cargo check` passes without warnings.
+
+Later phases will add local embeddings and semantic search ranking.
 
 ---
 
