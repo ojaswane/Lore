@@ -29,6 +29,11 @@ pub enum IngestEvent {
 // the main UI thread. The main thread sends completed command events through
 // a channel, and the ingest worker receives them and writes them to SQLite.
 
+// TODO :
+// Keep saving the full command in commands like you already do.
+// Add a chunking function that splits output into smaller pieces.
+// Later, those chunks will go into a separate chunks table for embeddings.
+
 pub fn ingest_worker(rx: std::sync::mpsc::Receiver<IngestEvent>) {
     // adding a connection with the db
     let conn = crate::db::storage::init_db().expect("Failed to initialize database");
