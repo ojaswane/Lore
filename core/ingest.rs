@@ -53,8 +53,7 @@ pub fn ingest_worker(rx: std::sync::mpsc::Receiver<IngestEvent>) {
                 // calls the chunking function to split the output into smaller chunks
                 let chunks = crate::core::chunk::chunk_output(&output);
 
-                // TODO , SAVE IT TO DIFFERENT TABLE IN DB FOR EMBEDDINGS
-                println!("Chunks: {:?}", chunks);
+                let _ = crate::core::chunk::store_chunks(&chunks);
 
                 // Insert the command into the database
                 if let Err(e) = crate::db::storage::save_command(

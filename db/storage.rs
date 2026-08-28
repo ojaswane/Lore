@@ -39,6 +39,8 @@ pub fn init_db() -> Result<Connection> {
             output      TEXT,
             embedding   BLOB,
             FOREIGN KEY (command_id) REFERENCES commands(id)
+
+        CREATE INDEX IF NOT EXISTS idx_chunks_timestamp ON chunks(timestamp);
     ",
     )?;
 
