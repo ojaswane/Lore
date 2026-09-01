@@ -30,8 +30,6 @@ pub enum IngestEvent {
 // a channel, and the ingest worker receives them and writes them to SQLite.
 
 // TODO :
-// Keep saving the full command in commands like you already do.
-// Add a chunking function that splits output into smaller pieces.
 // Later, those chunks will go into a separate chunks table for embeddings.
 
 pub fn ingest_worker(rx: std::sync::mpsc::Receiver<IngestEvent>) {
