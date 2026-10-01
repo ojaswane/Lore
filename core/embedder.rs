@@ -1,6 +1,7 @@
 // take the chunks and then embed them for better Ai search
+// we are using candle for this.
+use std::vec;
 
-pub fn embed_text(chunks: &[String]) -> Vec<Vec<f32>> {
-    // Implementation for text embedding
-    unimplemented!()
+pub fn embed_text(chunks: &[String]) {
+    unimplemented!();
 }

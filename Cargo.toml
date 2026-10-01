@@ -2,6 +2,9 @@
 name = "Lore"
 version = "0.1.0"
 edition = "2024"
+name = "mini-embed"
+version = "0.1.0"
+edition = "2021"
 
 [dependencies]
 ratatui = { version = "0.30.0", default-features = false, features = ["crossterm"] }
@@ -17,8 +20,10 @@ reqwest = { version = "0.13.4", features = ["blocking", "json"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 candle-core = "0.8.2"
-candle-transformers = "0.8.2"
-tokenizers = "0.21.0"
+candle-core = "0.9"
+candle-nn = "0.9"
+candle-transformers = "0.9"
+tokenizers = "0.21"
 
 
 [[bin]]
