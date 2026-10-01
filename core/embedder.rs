@@ -10,8 +10,8 @@ use tokenizers::Tokenizer;
 fn mean_pooling(embeddings: &Tensor, attention_mask: &Tensor) -> Result<Tensor> {
     unimplemented!();
 
-    // [bin , sequence] = [bin , sequence] * [bin , sequence]
-    let mask = attention_mask.unsqueeze(1)?.to_dtype(embeddings.dtype())?;
+    // // [bin , sequence] = [bin , sequence] * [bin , sequence]
+    // let mask = attention_mask.unsqueeze(1)?.to_dtype(embeddings.dtype())?;
 }
 
 pub fn embed_text(chunks: &[String]) {
@@ -23,4 +23,16 @@ pub fn embed_text(chunks: &[String]) {
     let config_path = format!("{}/config.json", model_dir);
     let tokenizer_path = format!("{}/tokenizer.json", model_dir);
     let weights_path = format!("{}/model.safetensors", model_dir);
+
+    // Load tokenizer
+    let tokenizer = Tokenizer::from_file(&tokenizer_path)
+        .map_err(|e| anyhow::anyhow!("Failed to load tokenizer: {:?}", e))
+        .unwrap();
+
+    // Load BERT config
+    let config: Config = serde_json::from_reader(std::fs::File::open(config_path)?)?;
+
+    // load the weights from safetensors
+    let vb = candle_nn::VarBuilder::from_mmaped_safetensors(&[weights_path], DType::F32, &device)?;\
+
 }
