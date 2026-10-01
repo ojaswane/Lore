@@ -71,6 +71,8 @@ pub fn ingest_worker(rx: std::sync::mpsc::Receiver<IngestEvent>) {
                             ) {
                                 eprintln!("Failed to insert chunk into database: {:?}", e);
                             }
+
+                            // else match the chunks to store it into sql
                         }
                     }
                     Err(e) => {
