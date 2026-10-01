@@ -24,7 +24,9 @@ Every project has a story: the commands you ran, the errors you hit, the fixes t
 
 Lore doesn't.
 
-Lore is a local terminal emulator with a memory layer. It looks and feels like a normal terminal, but underneath it stores your sessions, commands, output, working directories, timestamps, and exit metadata in a local SQLite database.
+Lore is a local terminal emulator with a memory layer. a local-first terminal that captures terminal sessions, indexes debugging history, and uses AI to retrieve how you previously solved problems.
+
+It looks and feels like a normal terminal, but underneath it stores your sessions, commands, output, working directories, timestamps, and exit metadata in a local SQLite database.
 
 No cloud. No account. No remote sync. Just your lore, on your machine.
 
