@@ -1,6 +1,6 @@
 // take the chunks and then embed them for better Ai search
 // we are using candle for this.
-use anyhow::Result;
+use anyhow::{Ok, Result};
 
 use candle_core::{DType, Device, Tensor};
 use candle_transformers::models::bert::{BertModel, Config};
@@ -12,6 +12,10 @@ fn mean_pooling(embeddings: &Tensor, attention_mask: &Tensor) -> Result<Tensor> 
 
     // // [bin , sequence] = [bin , sequence] * [bin , sequence]
     // let mask = attention_mask.unsqueeze(1)?.to_dtype(embeddings.dtype())?;
+}
+
+fn normalization(embeddings: &Tensor) -> Result<Tensor> {
+    unimplemented!();
 }
 
 pub fn embed_text(chunks: &[String]) {
@@ -72,4 +76,23 @@ pub fn embed_text(chunks: &[String]) {
 
     // forward pass through the model
     let token_embeddings = model.forward(&input_ids, &attention_mask)?;
+
+    // To check the output
+    println!("Transformer output shape: {:?}", token_embeddings.dims());
+
+    //mean pooling to get sentence embeddings
+    let sentence_embeddings = mean_pooling(&token_embeddings, &attention_mask)?;
+    println!(
+        "Sentence embeddings shape: {:?}",
+        sentence_embeddings.dims()
+    );
+
+    // normalize the embeddings
+    let normalized_sentence_embeddings = normalization(&sentence_embeddings)?;
+    println!(
+        "Normalized sentence embeddings shape: {:?}",
+        normalized_sentence_embeddings.dims()
+    );
+
+    Ok(());
 }
