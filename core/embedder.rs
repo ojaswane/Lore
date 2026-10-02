@@ -38,8 +38,11 @@ pub fn embed_text(chunks: &[String]) {
     let mini_llm = BertModel::new(&config, &vb, device)?;
 
     // text to embeded
+
+    let text = Vec::new();
+
     for chunk in chunks {
-        let text = Vec::from([chunk.as_str()]);
+        text = Vec::from([chunk.as_str()]);
 
         // tokenize the text
 
@@ -66,4 +69,7 @@ pub fn embed_text(chunks: &[String]) {
     let input_ids = Tensor::from_vec(input_ids_flat, (texts.len(), seq_len), &device)?;
 
     let attention_mask = Tensor::from_vec(attention_flat, (texts.len(), seq_len), &device)?;
+
+    // forward pass through the model
+    let token_embeddings = model.forward(&input_ids, &attention_mask)?;
 }
