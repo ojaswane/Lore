@@ -46,14 +46,24 @@ pub fn embed_text(chunks: &[String]) {
         let encoding = tokenizer
             .encode_batch(text.clone(), true)
             .map_err(|e| anyhow::anyhow!(e))?;
-
-        let input_ids: Vec<Vec<u32>> = encoding.iter().map(|e| e.get_ids().to_vec()).collect();
-
-        let attention_masks: Vec<Vec<u32>> = encoding
-            .iter()
-            .map(|e| e.get_attention_mask().to_vec())
-            .collect();
-
-        
     }
+
+    let input_ids: Vec<Vec<u32>> = encoding.iter().map(|e| e.get_ids().to_vec()).collect();
+
+    let attention_masks: Vec<Vec<u32>> = encoding
+        .iter()
+        .map(|e| e.get_attention_mask().to_vec())
+        .collect();
+
+    // convert to tensors
+
+    let seq_len = input_ids[0].len();
+
+    let input_ids_flat: Vec<u32> = input_ids.into_iter().flatten().collect();
+
+    let attention_flat: Vec<u32> = attention_masks.into_iter().flatten().collect();
+
+    let input_ids = Tensor::from_vec(input_ids_flat, (texts.len(), seq_len), &device)?;
+
+    let attention_mask = Tensor::from_vec(attention_flat, (texts.len(), seq_len), &device)?;
 }
