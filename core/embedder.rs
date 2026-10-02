@@ -44,7 +44,16 @@ pub fn embed_text(chunks: &[String]) {
         // tokenize the text
 
         let encoding = tokenizer
-            .encode_batch(texts.clone(), true)
+            .encode_batch(text.clone(), true)
             .map_err(|e| anyhow::anyhow!(e))?;
+
+        let input_ids: Vec<Vec<u32>> = encoding.iter().map(|e| e.get_ids().to_vec()).collect();
+
+        let attention_masks: Vec<Vec<u32>> = encoding
+            .iter()
+            .map(|e| e.get_attention_mask().to_vec())
+            .collect();
+
+        
     }
 }
