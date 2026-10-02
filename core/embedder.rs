@@ -33,6 +33,18 @@ pub fn embed_text(chunks: &[String]) {
     let config: Config = serde_json::from_reader(std::fs::File::open(config_path)?)?;
 
     // load the weights from safetensors
-    let vb = candle_nn::VarBuilder::from_mmaped_safetensors(&[weights_path], DType::F32, &device)?;\
+    let vb = candle_nn::VarBuilder::from_mmaped_safetensors(&[weights_path], DType::F32, &device)?;
 
+    let mini_llm = BertModel::new(&config, &vb, device)?;
+
+    // text to embeded
+    for chunk in chunks {
+        let text = Vec::from([chunk.as_str()]);
+
+        // tokenize the text
+
+        let encoding = tokenizer
+            .encode_batch(texts.clone(), true)
+            .map_err(|e| anyhow::anyhow!(e))?;
+    }
 }
