@@ -2,6 +2,8 @@
 name = "Lore"
 version = "0.1.0"
 edition = "2024"
+
+[package]
 name = "mini-embed"
 version = "0.1.0"
 edition = "2021"

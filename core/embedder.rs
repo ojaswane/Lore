@@ -22,7 +22,7 @@ pub fn embed_text(chunks: &[String]) {
     let device = Device::Cpu;
 
     // local model path
-    let model_dir = "models/all-MiniLM-L6-v2";
+    let model_dir = "core/models/all-MiniLM-L6-v2";
 
     let config_path = format!("{}/config.json", model_dir);
     let tokenizer_path = format!("{}/tokenizer.json", model_dir);
@@ -33,16 +33,15 @@ pub fn embed_text(chunks: &[String]) {
         .map_err(|e| anyhow::anyhow!("Failed to load tokenizer: {:?}", e))
         .unwrap();
 
-    // Load BERT config
+    // Load model config
     let config: Config = serde_json::from_reader(std::fs::File::open(config_path)?)?;
 
     // load the weights from safetensors
     let vb = candle_nn::VarBuilder::from_mmaped_safetensors(&[weights_path], DType::F32, &device)?;
 
-    let mini_llm = BertModel::new(&config, &vb, device)?;
+    let mini_llm = mini_llm::new(&config, &vb, device)?;
 
     // text to embeded
-
     let text = Vec::new();
 
     for chunk in chunks {
