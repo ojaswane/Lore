@@ -31,7 +31,6 @@ pub fn embed_text(chunks: &[String]) {
 
     // local model path
     let model_dir = "core/models/all-MiniLM-L6-v2";
-
     let config_path = format!("{}/config.json", model_dir);
     let tokenizer_path = format!("{}/tokenizer.json", model_dir);
     let weights_path = format!("{}/model.safetensors", model_dir);
