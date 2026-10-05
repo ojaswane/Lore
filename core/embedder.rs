@@ -8,9 +8,7 @@ use tokenizers::Tokenizer;
 
 // for making a sentance embedding.
 fn mean_pooling(embeddings: &Tensor, attention_mask: &Tensor) -> Result<Tensor> {
-    let mask = attention_mask
-        .unsqueeze(2)?
-        .to_dtype(embeddings.dtype())?;
+    let mask = attention_mask.unsqueeze(2)?.to_dtype(embeddings.dtype())?;
     let summed_embeddings = embeddings.broadcast_mul(&mask)?.sum(1)?;
     let token_counts = mask.sum(1)?;
 
@@ -18,7 +16,14 @@ fn mean_pooling(embeddings: &Tensor, attention_mask: &Tensor) -> Result<Tensor> 
 }
 
 fn normalization(embeddings: &Tensor) -> Result<Tensor> {
-    unimplemented!();
+    let norms = embeddings
+        .sqr()?
+        .sum(1)?
+        .sqrt()?
+        .unsqueeze(1)?
+        .clamp(1e-12f64, f64::MAX)?;
+
+    Ok(embeddings.broadcast_div(&norms)?)
 }
 
 pub fn embed_text(chunks: &[String]) {
