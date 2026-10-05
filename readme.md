@@ -59,11 +59,10 @@ Lore is still pre-alpha. Some pieces are intentionally rough while the core loop
 
 ## In Progress
 
-- Building the ingest pipeline boundary for command history.
-- Moving command persistence out of the main UI loop.
-- Capturing cleaner command output after a command finishes.
+- Implementing local embedding inference for stored output chunks.
+- Connecting generated embeddings to the ingest worker and SQLite.
+- Building semantic search over embedded command output.
 - Adding local AI explanations through Ollama.
-- Preparing the project for local semantic search over command output.
 - Adding focused tests for storage and search.
 
 ---
@@ -87,7 +86,10 @@ single ingest worker receives event
 worker saves command data to SQLite
        |
        v
-future phases: chunk output -> embed chunks -> semantic search
+worker chunks output -> local embedding model -> SQLite
+       |
+       v
+semantic search embeds the query and ranks matching chunks
 ```
 
 Phase 1 focuses only on the ingest boundary:
@@ -121,7 +123,21 @@ Phase 2 focuses on chunking command output so future embeddings can search small
 
 Phase 2 is complete: completed commands are saved, output is split into chunks, and each chunk is persisted for future embedding.
 
-Later phases will add local embeddings and semantic search ranking.
+Phase 3 starts local embedding support using the bundled
+`all-MiniLM-L6-v2` model. Model inference and persistence are not complete yet:
+
+- [x] Add the model configuration, tokenizer, and safetensors weights under `core/models/all-MiniLM-L6-v2/`.
+- [x] Implement masked mean pooling for token embeddings.
+- [x] Implement L2 normalization for sentence vectors.
+- [ ] Fix and compile the model-loading and inference flow in `core/embedder.rs`.
+- [ ] Return an embedding vector for each input chunk.
+- [ ] Call the embedder from the ingest worker and store vectors in `chunks.embedding`.
+- [ ] Embed search queries and rank stored chunks by cosine similarity.
+- [ ] Verify model inference works offline after model files are present.
+
+The model files are local and inference is intended to run on CPU without an API.
+Downloading the model files initially requires internet access; embedding after
+download should not.
 
 ---
 
@@ -163,13 +179,15 @@ Lore/
 ├── core/
 │   ├── io.rs               # PTY reader/writer setup
 │   ├── pty.rs              # shell spawning through portable-pty
-│   └── state.rs            # background output reader + vt100 parser updates
+│   ├── state.rs            # background output reader + vt100 parser updates
+│   ├── embedder.rs         # local text embedding inference (in progress)
+│   ├── chunk.rs            # output chunking
+│   └── models/
+│       └── all-MiniLM-L6-v2/ # local config, tokenizer, and model weights
 │
 ├── db/
 │   ├── storage.rs          # SQLite session and command writes
 │   ├── search.rs           # search/query layer
-│   ├── ingest.rs           # ingest event types and worker pipeline
-│   ├── embedding.rs        # future embedding module
 │   └── schema.txt          # database schema notes
 │
 ├── ui/
@@ -231,10 +249,11 @@ Lore stores data in:
 lore.db
 ```
 
-The database currently has two main tables:
+The database currently has three main tables:
 
 - `sessions` - one row per Lore session.
 - `commands` - command text, directory, output snapshot, exit code field, and duration.
+- `chunks` - split command output and optional embedding vector.
 
 Everything stays local.
 
