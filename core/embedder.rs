@@ -1,6 +1,6 @@
 // take the chunks and then embed them for better Ai search
 // we are using candle for this.
-use anyhow::{Ok, Result};
+use anyhow::Result;
 
 use candle_core::{DType, Device, Tensor};
 use candle_transformers::models::bert::{BertModel, Config};
@@ -8,10 +8,13 @@ use tokenizers::Tokenizer;
 
 // for making a sentance embedding.
 fn mean_pooling(embeddings: &Tensor, attention_mask: &Tensor) -> Result<Tensor> {
-    unimplemented!();
+    let mask = attention_mask
+        .unsqueeze(2)?
+        .to_dtype(embeddings.dtype())?;
+    let summed_embeddings = embeddings.broadcast_mul(&mask)?.sum(1)?;
+    let token_counts = mask.sum(1)?;
 
-    // // [bin , sequence] = [bin , sequence] * [bin , sequence]
-    // let mask = attention_mask.unsqueeze(1)?.to_dtype(embeddings.dtype())?;
+    Ok(summed_embeddings.broadcast_div(&token_counts)?)
 }
 
 fn normalization(embeddings: &Tensor) -> Result<Tensor> {
